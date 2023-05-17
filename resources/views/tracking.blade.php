@@ -88,6 +88,27 @@
 @push('script')
 <script>
     $(document).ready(function() {
+
+        getLocationData = function(d_array) {
+            const res = new Object;
+            // for(var i = 0 ; i < 3 ; i ++) {
+            //     obj['task' + i] = i;
+            // }
+            for(let i = 0; i < d_array.length ; i++) {
+                res[d_array[i][0].device_name] = [];
+                for(let j = 0; j < d_array[i].length; j++) { 
+                    res[d_array[i][j].device_name].push([d_array[i][j].lat, d_array[i][j].lon]);
+                }
+            }
+            console.log(res);
+        }
+
+        const obj = new Object;
+        for(var i = 0 ; i < 3 ; i ++) {
+            obj['task' + i] = i;
+        }
+        console.log(obj);
+
         const date_now = Math.floor(Date.now() / 1000);
         const date_formated = moment.unix(date_now).format('MM/DD/YYYY');
         $('#selected_date').html(date_formated);
@@ -126,6 +147,9 @@
                     }
                 @endforeach
                 console.log(filteredArray_all);
+                var myJsonString = JSON.stringify(filteredArray_all[0]);
+                console.log(myJsonString);
+                getLocationData(filteredArray_all);
             });
         }
 
@@ -221,10 +245,6 @@
         });
 
         setSliderAttr(0,5,1,0);
-
-        getLocationData = function(d_array) {
-            const res;
-        }
     })
 </script>
 @endpush
