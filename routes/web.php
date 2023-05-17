@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TrackingController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,12 +21,8 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 
 Auth::routes();
 
-// Route::get('/home', function() {
-//     return redirect()->route('manage');
-// });
-
-Route::get('/user_manage', [HomeController::class, 'user_manage'])->name('manage');
-Route::post('/user_manage/add_device', [HomeController::class, 'add_device']);
+Route::get('/user_manage', [UserController::class, 'user_manage'])->name('manage');
+Route::post('/user_manage/add_device', [UserController::class, 'add_device']);
 
 Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking');
 Route::post('/tracking/date_changed', [TrackingController::class, 'dateChanged']);

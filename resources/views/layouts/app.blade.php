@@ -28,13 +28,13 @@
 <body>
     <div id="app">
         <!-- Top app bar navigation menu-->
-        <nav class="top-app-bar navbar navbar-expand navbar-dark bg-dark">
+        <nav class="top-app-bar navbar navbar-expand navbar-dark bg-dark" style="background-color:#6200EA!important">
             <div class="container-fluid px-4" style="justify-content: flex-end;">
-                <!-- Drawer toggle button-->
-                <!-- <button class="btn btn-lg btn-icon order-1 order-lg-0" id="drawerToggle" href="javascript:void(0);"><i class="material-icons">menu</i></button> -->
-                <!-- Navbar brand-->
-                <!-- <a class="navbar-brand me-auto" href="index.html"><div class="text-uppercase font-monospace">Material Admin Pro</div></a> -->
-                <!-- Navbar items-->
+                <!-- Drawer toggle button -->
+                <button class="btn btn-lg btn-icon order-1 order-lg-0" id="drawerToggle" href="javascript:void(0);"><i class="material-icons">menu</i></button>
+                <!-- Navbar brand -->
+                <a class="navbar-brand me-auto" href="/"><div class="text-uppercase font-monospace">TRACKING PRO</div></a>
+                <!-- Navbar items -->
                 <div class="d-flex align-items-center mx-3 me-lg-0">
                     <!-- Navbar-->
                     <!-- <ul class="navbar-nav d-none d-lg-flex">
@@ -136,7 +136,7 @@
                         <div class="dropdown">
                             <button class="btn btn-lg btn-icon dropdown-toggle" id="dropdownMenuProfile" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">person</i></button>
                             <ul class="dropdown-menu dropdown-menu-end mt-3" aria-labelledby="dropdownMenuProfile">
-                                <li>
+                                <!-- <li>
                                     <a class="dropdown-item" href="#!">
                                         <i class="material-icons leading-icon">person</i>
                                         <div class="me-3">Profile</div>
@@ -154,7 +154,7 @@
                                         <div class="me-3">Help</div>
                                     </a>
                                 </li>
-                                <li><hr class="dropdown-divider" /></li>
+                                <li><hr class="dropdown-divider" /></li> -->
                                 <li>
                                     <a class="dropdown-item" href="{{ route('logout') }}" 
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -171,9 +171,37 @@
                 </div>
             </div>
         </nav>
-        <main class="py-4">
-            @yield('content')
-        </main>
+        <!-- Layout wrapper-->
+        <div id="layoutDrawer">
+            <!-- Layout navigation-->
+            <div id="layoutDrawer_nav">
+                <!-- Drawer navigation-->
+                <nav class="drawer accordion drawer-light bg-white" id="drawerAccordion">
+                    <div class="drawer-menu">
+                        <div class="nav">
+                            <!-- Drawer link (Dashboard)-->
+                            <a class="nav-link" href="/" style="margin-top:30px;">
+                                <div class="nav-link-icon"><i class="material-icons">dashboard</i></div>
+                                DashBoard
+                            </a>
+                            <a class="nav-link" href="/user_manage" style="margin-top:10px;">
+                                <div class="nav-link-icon"><i class="material-icons">build</i></div>
+                                User Management
+                            </a>
+                            <a class="nav-link" href="/tracking" style="margin-top:10px;">
+                                <div class="nav-link-icon"><i class="material-icons">language</i></div>
+                                Tracking Data
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutDrawer_content">
+                <main class="py-4">
+                    @yield('content')
+                </main>
+            </div>
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <!-- Load global scripts-->

@@ -39,6 +39,6 @@ class AppServiceProvider extends ServiceProvider
 
         config(['device_status' => $device_status]);
         View::share(['device_status' => $device_status]);
-        View::share(['device_status' => $background_colors]);
+        View::share(['background_colors' => $background_colors]);
     }
 }
