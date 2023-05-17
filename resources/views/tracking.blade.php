@@ -79,7 +79,7 @@
                 </div>
             </div>
         </div>
-        <mwc-slider id="slider" min="1" max="5" value="1" step="1" class="w-100" onchange="changeSlider()" pin markers></mwc-slider>
+        <mwc-slider id="slider" min="0" max="1" value="0" step="1" class="w-100" onchange="changeSlider()" pin markers></mwc-slider>
         <div id="selected_date"></div>
     </div>
 @endsection
@@ -95,6 +95,7 @@
         var dateRangePicker = $('input[name="daterange"]');
         let deviceArray_all = [];
         let filteredArray_all = [];
+        start_date = end_date = moment(Date.now());
         if(dateRangePicker.length !== 0) {
             dateRangePicker.daterangepicker({
                 opens: 'left'
@@ -119,7 +120,7 @@
                     });
                     filteredArray_all.push(filteredArray);
                     device_temp = '';
-                    if(filteredArray.length){
+                    if(filteredArray.length) {
                         latest_track = filteredArray[filteredArray.length - 1];
                         device_temp += '<tr class=' + getBackgroundColor(latest_track.status) + '>' +
                                             '<td><mwc-checkbox class="devices_checker"></mwc-checkbox></td></td>' + 
@@ -131,7 +132,9 @@
                     }
                 @endforeach
                 console.log(filteredArray_all);
-                setSliderAttr(0, Math.floor((end-start)/1000/3600/24), 1, 0);
+                console.log((end-start)/100/3600/24);
+                setSliderAttr(0, Math.floor((end-start)/1000/3600/24), 1, Math.floor((end-start)/1000/3600/24));
+                changeSlider();
             });
         }
 
@@ -215,28 +218,24 @@
             $('#slider').prop('step', step);
             $('#slider').prop('value', value);
         }
-
-        $('#slider').slider({
-            value: 1,
-            min: 1,
-            max: 5,
-            step: 1,
-            slide: function(event, ui) {
-                console.log(ui.value);
-            }
-        });
-
-        
-        setSliderAttr(0,5,1,0);
-
     })
+
+    function getCurrentData() {
+        
+    }
 
     function changeSlider() {
         console.log("change slider");
         console.log($("#slider").prop('value'))
-        let date = start_date.add($("#slider").prop('value'), 'd');
+        let date = new moment(start_date);
+        date.add($("#slider").prop('value'), 'd');
         console.log(date.format('MM/DD/YYYY'))
-        $("#selected_date").text(date.format("MM/DD/YYYY"))
+        $("#selected_date").text(date.format("MM/DD/YYYY"));
+        updateMap();
+    }
+
+    function updateMap() {
+        console.log('updateMap');
     }
 </script>
 
