@@ -36,7 +36,6 @@ function remove_all_markers()
 
 async function refresh_marker(data) {
     data = data || initialData;
-    console.log("refresh_marker", data);
 
     remove_all_markers();
 
@@ -99,7 +98,6 @@ function getInvertedColor(color) {
     b = 255 - b;
 
     var invertedColor = "#" + r.toString(16) + g.toString(16) + b.toString(16);
-    console.log(invertedColor);
     return invertedColor;
 }
 

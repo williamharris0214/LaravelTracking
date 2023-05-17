@@ -139,6 +139,8 @@
 
             $('#save_btn').on('click', function() {
                 current_user_devices = current_devices;
+                console.log(user_id);
+                console.log(current_devices);
                 $.ajax({
                     type: 'POST',
                     url: '/user_manage/add_device',

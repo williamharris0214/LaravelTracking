@@ -87,30 +87,60 @@
 @push('script')
 <script>
     let start_date, end_date;
+    let filteredArray_all = [];
+    let array = [];
 
     function updateCheckBox() {
-        $("mwc-checkbox").on('change', () => {
-            console.log('checkbox changed to ${checkbox.checked}');
+        $("mwc-checkbox").on('change', (a) => {
+            const isChecked = $(a.target).prop('checked');
+            const device_id = $(a.target).attr('data-deviceid');
+            if(isChecked) {
+                for(let i = 0; i < filteredArray_all.length; i++){
+                    if(filteredArray_all[i][0].device_id == device_id) {
+                        array.splice(i, 0, filteredArray_all[i]);
+                        break;
+                    }
+                }
+                var loc_data = getLocationData(array);
+                refresh_marker(loc_data);
+            }
+            else{
+                for(let i = 0; i < array.length; i++){
+                    if(array[i][0].device_id == device_id) {
+                        array.splice(i, 1);
+                        break;
+                    }
+                }
+                var loc_data = getLocationData(array);
+                refresh_marker(loc_data);
+            }
         });
     }
-    
 
-    $(document).ready(function() {
-        getLocationData = function(d_array) {
+    getLocationData = function(d_array) {
             const res = new Object;
             for(let i = 0; i < d_array.length ; i++) {
-                res[d_array[i][0].device_name] = [];
-                for(let j = 0; j < d_array[i].length; j++) { 
-                    res[d_array[i][j].device_name].push([d_array[i][j].lat, d_array[i][j].lon]);
+                if(d_array[i].length){
+                    res[d_array[i][0].device_name] = [];
+                    for(let j = 0; j < d_array[i].length; j++) { 
+                        res[d_array[i][j].device_name].push([d_array[i][j].lat, d_array[i][j].lon]);
+                    }
                 }
             }
             return res;
-        }
+    }
+
+    $(document).ready(function() {
+        setFilteredArray();
+        var loc_data = getLocationData(filteredArray_all);
+        console.log('loc_data',loc_data);
+        refresh_marker(loc_data);
+        
         const date_now = Math.floor(Date.now() / 1000);
         const date_formated = moment.unix(date_now).format('MM/DD/YYYY');
         $('#selected_date').html(date_formated);
         var dateRangePicker = $('input[name="daterange"]');
-        let filteredArray_all = [];
+        
         start_date = end_date = moment(Date.now());
         console.log("AAAAA");
         updateCheckBox();
@@ -152,6 +182,7 @@
                 var loc_data = getLocationData(filteredArray_all);
                 console.log('loc_data',loc_data);
                 refresh_marker(loc_data);
+                array = [...filteredArray_all];
                 console.log((end-start)/100/3600/24);
                 setSliderAttr(0, Math.floor((end-start)/1000/3600/24), 1, Math.floor((end-start)/1000/3600/24));
                 changeSlider();
@@ -258,6 +289,13 @@
 
     function updateMap() {
         console.log('updateMap');
+    }
+
+    function setFilteredArray() {
+        @foreach($devices as $device)
+            filteredArray = <?php echo json_encode($device->tracks); ?>;
+            filteredArray_all.push(filteredArray);
+        @endforeach
     }
 </script>
 
