@@ -43,7 +43,7 @@ class UserController extends Controller
         $user_id = $data['user_id'];
         $user = User::find($user_id);
 
-        $user->devices = $data['devices'];
+        $user->devices = !empty($data['devices']) ? $data['devices'] : [];
         $user->save();
 
         return $user;

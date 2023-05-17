@@ -80,7 +80,10 @@
             </div>
         </div>
         <mwc-slider id="slider" min="0" max="1" value="1" step="1" class="w-100" onchange="changeSlider()" pin markers></mwc-slider>
-        <div id="selected_date"></div>
+        <div>
+            <div>From: <span id="starting_date"></span></div>
+            <div style="margin-top:10px;">To: <span id="selected_date"></span></div>
+        </div>
     </div>
 @endsection
 
@@ -90,28 +93,32 @@
     let filteredArray_all = [];
     let array = [];
 
-    function updateCheckBox() {
+    function updateCheckBox(filteredArrayInput) {
+        array = [...filteredArrayInput];
+        console.log('---array---', array);
         $("mwc-checkbox").on('change', (a) => {
             const isChecked = $(a.target).prop('checked');
             const device_id = $(a.target).attr('data-deviceid');
             if(isChecked) {
-                for(let i = 0; i < filteredArray_all.length; i++){
-                    if(filteredArray_all[i][0].device_id == device_id) {
-                        array.splice(i, 0, filteredArray_all[i]);
+                for(let i = 0; i < filteredArrayInput.length; i++){
+                    if(filteredArrayInput[i].length && filteredArrayInput[i][0].device_id == device_id) {
+                        array.splice(i, 0, filteredArrayInput[i]);
                         break;
                     }
                 }
                 var loc_data = getLocationData(array);
+                console.log('aaa');
                 refresh_marker(loc_data);
             }
             else{
                 for(let i = 0; i < array.length; i++){
-                    if(array[i][0].device_id == device_id) {
+                    if(array[i].length && array[i][0].device_id == device_id) {
                         array.splice(i, 1);
                         break;
                     }
                 }
                 var loc_data = getLocationData(array);
+                console.log('bbb');
                 refresh_marker(loc_data);
             }
         });
@@ -133,17 +140,17 @@
     $(document).ready(function() {
         setFilteredArray();
         var loc_data = getLocationData(filteredArray_all);
-        console.log('loc_data',loc_data);
+        console.log('----ready-----')
         refresh_marker(loc_data);
         
         const date_now = Math.floor(Date.now() / 1000);
         const date_formated = moment.unix(date_now).format('MM/DD/YYYY');
         $('#selected_date').html(date_formated);
+        $('#starting_date').html(date_formated);
         var dateRangePicker = $('input[name="daterange"]');
         
         start_date = end_date = moment(Date.now());
-        console.log("AAAAA");
-        updateCheckBox();
+        updateCheckBox(filteredArray_all);
 
         if(dateRangePicker.length !== 0) {
             dateRangePicker.daterangepicker({
@@ -181,12 +188,13 @@
                 console.log(filteredArray_all);
                 var loc_data = getLocationData(filteredArray_all);
                 console.log('loc_data',loc_data);
+                console.log('ccccc');
                 refresh_marker(loc_data);
-                array = [...filteredArray_all];
+                //array = [...filteredArray_all];
                 console.log((end-start)/100/3600/24);
                 setSliderAttr(0, Math.floor((end-start)/1000/3600/24), 1, Math.floor((end-start)/1000/3600/24));
-                changeSlider();
-                updateCheckBox();
+                setTextFromSlider();
+                updateCheckBox(filteredArray_all);
             });
         }
 
@@ -265,33 +273,69 @@
         }
 
         setSliderAttr = function(min, max, step, value) {
+            //console.log('set slider attr', min, max, step, value);
             $('#slider').prop('min', min);
             $('#slider').prop('max', max);
             $('#slider').prop('step', step);
-            $('#slider').prop('value', value);
+            $('#slider').prop('value', max);
+            setTimeout(() => $('#slider').prop('value', max), 0);
         }
     })
 
-    
-    function getCurrentData() {
-
+    function setTextFromSlider() {
+        let date = new moment(start_date);
+        let value = $("#slider").prop('value');
+        date.add(value, 'd');
+        console.log(date.format('MM/DD/YYYY'))
+        $("#starting_date").text(start_date.format("MM/DD/YYYY"));
+        $("#selected_date").text(date.format("MM/DD/YYYY"));
+        return date;
     }
 
     function changeSlider() {
-        console.log("change slider");
-        console.log($("#slider").prop('value'))
-        let date = new moment(start_date);
-        date.add($("#slider").prop('value'), 'd');
-        console.log(date.format('MM/DD/YYYY'))
-        $("#selected_date").text(date.format("MM/DD/YYYY"));
-        updateMap();
+        let date = setTextFromSlider();
+        updateMap(date);
     }
 
-    function updateMap() {
-        console.log('updateMap');
+    function updateMap(date) {
+        let start = start_date.unix();
+        let end = date.unix();
+        let filteredArray_temp = [];
+        $('#devices-container').html('');
+        for(let i = 0; i < filteredArray_all.length; i++) {
+            let device_temp = '';
+            let latest_track;
+            let filteredArray = getFilteredArray(filteredArray_all[i], start, end);
+            filteredArray_temp.push(filteredArray);
+            if(filteredArray.length) {
+                latest_track = filteredArray[filteredArray.length - 1];
+                device_temp += '<tr class=' + getBackgroundColor(latest_track.status) + '>' +
+                                    '<td><mwc-checkbox checked class="devices_checker" data-deviceid="' + latest_track.device_id + '"></mwc-checkbox></td>' + 
+                                    '<td>' + latest_track.device_name + '</td>' + 
+                                    '<td>' + getStatusName(latest_track.status) + '</td>' + 
+                                    '<td>' + getDiffMins(latest_track.timestamp) + ' Minutes' + '</td>' + 
+                                '</tr>';
+                $('#devices-container').append(device_temp);
+            }
+        }
+        console.log(filteredArray_temp);
+        var loc_data = getLocationData(filteredArray_temp);
+        console.log('loc_data',loc_data);
+        console.log('dddd');
+        refresh_marker(loc_data);
+        updateCheckBox(filteredArray_temp);
+    }
+
+    function getFilteredArray(filteredArray, start, end) {
+        filteredArray = filteredArray.filter(function(el) {
+            const timestamp = new Date(el.timestamp).getTime();
+            return timestamp >= start && timestamp <= end;
+        });
+        return filteredArray;
     }
 
     function setFilteredArray() {
+        filteredArray_all = [];
         @foreach($devices as $device)
             filteredArray = <?php echo json_encode($device->tracks); ?>;
             filteredArray_all.push(filteredArray);

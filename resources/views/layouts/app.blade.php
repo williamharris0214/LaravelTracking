@@ -10,7 +10,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Tracking') }}</title>
-    <link href="resources/assets/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="{{ asset('theme/assets/img/favicon.ico') }}" rel="shortcut icon" type="image/x-icon" />
     <!-- Load Material Icons from Google Fonts-->
     <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet" />
     <!-- Roboto and Roboto Mono fonts from Google Fonts -->

@@ -61,7 +61,8 @@
                                             </div>
                                             <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
                                                 @if (Route::has('password.request'))
-                                                    <a class="small fw-500 text-decoration-none" href="{{ route('password.request') }}">Forgot Password?</a>
+                                                    <!-- <a class="small fw-500 text-decoration-none" href="{{ route('password.request') }}">Forgot Password?</a> -->
+                                                    <div></div>
                                                 @endif
                                                 <button class="btn btn-primary" type="submit">{{ __('Login') }}</button>
                                             </div>

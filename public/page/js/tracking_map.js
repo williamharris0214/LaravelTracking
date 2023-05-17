@@ -21,7 +21,7 @@ async function start_map() {
     };
     
     map = new Map($('#trackingmap')[0], mapProp);
-    refresh_marker();
+    // refresh_marker();
 }
 
 function remove_all_markers()
@@ -35,6 +35,8 @@ function remove_all_markers()
 }
 
 async function refresh_marker(data) {
+    console.log('here');
+    console.log(data);
     data = data || initialData;
 
     remove_all_markers();
@@ -48,11 +50,14 @@ async function refresh_marker(data) {
         positions = data[device_name];
         marker_list[device_name] = [];
         positions.forEach((pos, index) => {
+            let is_special = false;
+            if(index === positions.length - 1)
+                is_special = true;
             let position = {lat: pos[0], lng: pos[1]};
             const marker = new AdvancedMarkerElement({
                 map: map,
                 position: position,
-                content: create_marker(current_group, (device_name+"_("+index+")").trim())
+                content: create_marker(current_group, (device_name+"_("+index+")").trim(), is_special)
             });
 
             marker_list[device_name].push(marker);
@@ -101,16 +106,26 @@ function getInvertedColor(color) {
     return invertedColor;
 }
 
-function create_marker(group_index, title) {
+function create_marker(group_index, title, is_special) {
+    group_index = group_index % colorGroup.length;
     var markerIcon = document.createElement('div');
 
-    markerIcon.style.borderRadius = '10px';
-    markerIcon.style.width = '20px';
-    markerIcon.style.height = '20px';
+    if(is_special === true) {
+        markerIcon.style.borderRadius = '15px';
+        markerIcon.style.borderColor = 'darkred';
+        markerIcon.style.width = '30px';
+        markerIcon.style.height = '30px';
+    }
+    else {
+        markerIcon.style.borderRadius = '10px';
+        markerIcon.style.width = '20px';
+        markerIcon.style.height = '20px';
+        markerIcon.style.borderColor = 'white';
+    }
     markerIcon.style.background = colorGroup[group_index];
     markerIcon.style.borderWidth = '2px';
     markerIcon.style.borderStyle = 'solid';
-    markerIcon.style.borderColor = 'white';
+    
     markerIcon.style.display = 'flex';
     markerIcon.style.justifyContent = 'center';
     markerIcon.style.textAlign = 'center';
@@ -121,7 +136,7 @@ function create_marker(group_index, title) {
     textMark.style.color = getInvertedColor(colorGroup[group_index]);
     textMark.style.borderRadius = '2px';
     textMark.style.position = 'relative';
-    textMark.style.top = '22px';
+    textMark.style.top = is_special ? '32px' : '22px';
     textMark.style.padding = '1px 5px'
     textMark.style.fontSize = '10px';
     textMark.style.height = '15px';
