@@ -221,9 +221,6 @@
 
         setSliderAttr(0,5,1,0);
 
-        getLocationData = function(d_array) {
-            const res;
-        }
     })
 </script>
 
