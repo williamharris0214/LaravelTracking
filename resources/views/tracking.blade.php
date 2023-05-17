@@ -88,6 +88,13 @@
 <script>
     let start_date, end_date;
 
+    function updateCheckBox() {
+        $("mwc-checkbox").on('change', () => {
+            console.log('checkbox changed to ${checkbox.checked}');
+        });
+    }
+    
+
     $(document).ready(function() {
         const date_now = Math.floor(Date.now() / 1000);
         const date_formated = moment.unix(date_now).format('MM/DD/YYYY');
@@ -96,6 +103,9 @@
         let deviceArray_all = [];
         let filteredArray_all = [];
         start_date = end_date = moment(Date.now());
+        console.log("AAAAA");
+        updateCheckBox();
+
         if(dateRangePicker.length !== 0) {
             dateRangePicker.daterangepicker({
                 opens: 'left'
@@ -135,6 +145,7 @@
                 console.log((end-start)/100/3600/24);
                 setSliderAttr(0, Math.floor((end-start)/1000/3600/24), 1, Math.floor((end-start)/1000/3600/24));
                 changeSlider();
+                updateCheckBox();
             });
         }
 
@@ -220,8 +231,9 @@
         }
     })
 
+    
     function getCurrentData() {
-        
+
     }
 
     function changeSlider() {
