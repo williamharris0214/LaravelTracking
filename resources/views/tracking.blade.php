@@ -79,7 +79,7 @@
                 </div>
             </div>
         </div>
-        <mwc-slider id="slider" min="0" max="1" value="0" step="1" class="w-100" onchange="changeSlider()" pin markers></mwc-slider>
+        <mwc-slider id="slider" min="0" max="1" value="1" step="1" class="w-100" onchange="changeSlider()" pin markers></mwc-slider>
         <div id="selected_date"></div>
     </div>
 @endsection
@@ -228,19 +228,6 @@
             $('#slider').prop('step', step);
             $('#slider').prop('value', value);
         }
-
-        $('#slider').slider({
-            value: 1,
-            min: 1,
-            max: 5,
-            step: 1,
-            slide: function(event, ui) {
-                console.log(ui.value);
-            }
-        });
-
-        setSliderAttr(0,5,1,0);
-
     })
 
     function getCurrentData() {
