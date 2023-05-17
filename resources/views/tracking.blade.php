@@ -45,7 +45,7 @@
                                                     }
                                                 ?>
                                                 <tr class="{{ $background_color }}">
-                                                    <td style="width:10%;"><mwc-checkbox class="devices_checker"></mwc-checkbox></td>
+                                                    <td style="width:10%;"><mwc-checkbox checked class="devices_checker" data-deviceid="{{ $device->id }}"></mwc-checkbox></td>
                                                     <td>{{ $device->device_name }}</td>
                                                     <td>{{ $device_status[$device_latest->status] }}</td>
                                                     <td>{{ $device_latest->dataFormatAttribute() }} Minutes</td>
@@ -74,9 +74,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xl-8 col-md-6 mb-5">
+            <div id="trackingmap" class="col-xl-8 col-md-6 mb-5">
                 <div class="card card-raised bg-primary bg-gradient text-white h-100">
-                    <div class="px-1"><canvas id="dashboardAreaChartLight"></canvas></div>
                 </div>
             </div>
         </div>
@@ -88,39 +87,26 @@
 @push('script')
 <script>
     $(document).ready(function() {
-
         getLocationData = function(d_array) {
             const res = new Object;
-            // for(var i = 0 ; i < 3 ; i ++) {
-            //     obj['task' + i] = i;
-            // }
             for(let i = 0; i < d_array.length ; i++) {
                 res[d_array[i][0].device_name] = [];
                 for(let j = 0; j < d_array[i].length; j++) { 
                     res[d_array[i][j].device_name].push([d_array[i][j].lat, d_array[i][j].lon]);
                 }
             }
-            console.log(res);
+            return res;
         }
-
-        const obj = new Object;
-        for(var i = 0 ; i < 3 ; i ++) {
-            obj['task' + i] = i;
-        }
-        console.log(obj);
-
         const date_now = Math.floor(Date.now() / 1000);
         const date_formated = moment.unix(date_now).format('MM/DD/YYYY');
         $('#selected_date').html(date_formated);
         var dateRangePicker = $('input[name="daterange"]');
-        let deviceArray_all = [];
         let filteredArray_all = [];
         if(dateRangePicker.length !== 0) {
             dateRangePicker.daterangepicker({
                 opens: 'left'
             }, function(start, end, label) {
                 $('#devices-container').html('');
-                deviceArray_all = [];
                 filteredArray_all = [];
                 let deviceArray = [];
                 let filteredArray = [];
@@ -128,7 +114,6 @@
                 let latest_track;
                 @foreach($devices as $device)
                     deviceArray = <?php echo json_encode($device->tracks); ?>;
-                    deviceArray_all.push(deviceArray);
                     filteredArray = deviceArray.filter(function(el) {
                         const timestamp = new Date(el.timestamp).getTime();
                         return timestamp >= Date.parse(start)/1000 && timestamp <=Date.parse(end)/1000;
@@ -138,7 +123,7 @@
                     if(filteredArray.length){
                         latest_track = filteredArray[filteredArray.length - 1];
                         device_temp += '<tr class=' + getBackgroundColor(latest_track.status) + '>' +
-                                            '<td><mwc-checkbox class="devices_checker"></mwc-checkbox></td></td>' + 
+                                            '<td><mwc-checkbox checked class="devices_checker" data-deviceid="' + latest_track.device_id + '"></mwc-checkbox></td>' + 
                                             '<td>' + latest_track.device_name + '</td>' + 
                                             '<td>' + getStatusName(latest_track.status) + '</td>' + 
                                             '<td>' + getDiffMins(latest_track.timestamp) + ' Minutes' + '</td>' + 
@@ -147,9 +132,9 @@
                     }
                 @endforeach
                 console.log(filteredArray_all);
-                var myJsonString = JSON.stringify(filteredArray_all[0]);
-                console.log(myJsonString);
-                getLocationData(filteredArray_all);
+                var loc_data = getLocationData(filteredArray_all);
+                console.log('loc_data',loc_data);
+                refresh_marker(loc_data);
             });
         }
 
@@ -234,17 +219,50 @@
             $('#slider').prop('value', value);
         }
 
-        $('#slider').slider({
-            value: 1,
-            min: 1,
-            max: 5,
-            step: 1,
-            slide: function(event, ui) {
-                console.log(ui.value);
-            }
-        });
+        // $('#slider').slider({
+        //     value: 1,
+        //     min: 1,
+        //     max: 5,
+        //     step: 1,
+        //     slide: function(event, ui) {
+        //         console.log(ui.value);
+        //     }
+        // });
 
         setSliderAttr(0,5,1,0);
+
+        // $('.devices_checker').on('click', function() {
+        //     let device_id = $(this).attr('data-deviceid');
+        //     if($(this).prop('checked')) {
+        //         for(let i = 0 ; i < filteredArray_all.length; i++) {
+        //             if(filteredArray_all[i][0].device_id === device_id) {
+        //                 filteredArray_all.splice(i, 1);
+        //                 break;
+        //             }
+        //         }
+        //         console.log('after uncheck', filteredArray_all);
+        //         refresh_marker(getLocationData(filteredArray_all));
+        //     } else {
+        //         // current_devices.push(device_id);
+        //     }
+        //     // console.log(current_devices);
+        // });
+
+        const checkbox = document.body.querySelector('mwc-checkbox');
+        console.log('dddd',checkbox);
+        checkbox.addEventListener('change', () => {
+            if(checkbox.checked){
+                console.log('a');
+            }
+            else
+                console.log('b');
+        })
     })
 </script>
+
+<script src="{{ asset('page/js/tracking_map.js') }}"></script>
+
+<script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+        ({key: "AIzaSyAf003EuRP2rjWPSSLCIcVbyKPNTF8iVc4", v: "beta"});</script>
+
 @endpush
