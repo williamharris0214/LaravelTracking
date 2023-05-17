@@ -79,13 +79,15 @@
                 </div>
             </div>
         </div>
-        <mwc-slider id="slider" class="w-100" pin markers></mwc-slider>
+        <mwc-slider id="slider" min="1" max="5" value="1" step="1" class="w-100" onchange="changeSlider()" pin markers></mwc-slider>
         <div id="selected_date"></div>
     </div>
 @endsection
 
 @push('script')
 <script>
+    let start_date, end_date;
+
     $(document).ready(function() {
         const date_now = Math.floor(Date.now() / 1000);
         const date_formated = moment.unix(date_now).format('MM/DD/YYYY');
@@ -97,6 +99,10 @@
             dateRangePicker.daterangepicker({
                 opens: 'left'
             }, function(start, end, label) {
+                
+                start_date = moment(start);
+                end_date = moment(end);
+
                 $('#devices-container').html('');
                 deviceArray_all = [];
                 filteredArray_all = [];
@@ -125,6 +131,7 @@
                     }
                 @endforeach
                 console.log(filteredArray_all);
+                setSliderAttr(0, Math.floor((end-start)/1000/3600/24), 1, 0);
             });
         }
 
@@ -219,9 +226,18 @@
             }
         });
 
+        
         setSliderAttr(0,5,1,0);
 
     })
+
+    function changeSlider() {
+        console.log("change slider");
+        console.log($("#slider").prop('value'))
+        let date = start_date.add($("#slider").prop('value'), 'd');
+        console.log(date.format('MM/DD/YYYY'))
+        $("#selected_date").text(date.format("MM/DD/YYYY"))
+    }
 </script>
 
 <script src="{{ asset('page/js/tracking_map.js') }}"></script>
