@@ -79,13 +79,15 @@
                 </div>
             </div>
         </div>
-        <mwc-slider id="slider" class="w-100" pin markers></mwc-slider>
+        <mwc-slider id="slider" min="0" max="1" value="0" step="1" class="w-100" onchange="changeSlider()" pin markers></mwc-slider>
         <div id="selected_date"></div>
     </div>
 @endsection
 
 @push('script')
 <script>
+    let start_date, end_date;
+
     $(document).ready(function() {
         getLocationData = function(d_array) {
             const res = new Object;
@@ -102,10 +104,15 @@
         $('#selected_date').html(date_formated);
         var dateRangePicker = $('input[name="daterange"]');
         let filteredArray_all = [];
+        start_date = end_date = moment(Date.now());
         if(dateRangePicker.length !== 0) {
             dateRangePicker.daterangepicker({
                 opens: 'left'
             }, function(start, end, label) {
+                
+                start_date = moment(start);
+                end_date = moment(end);
+
                 $('#devices-container').html('');
                 filteredArray_all = [];
                 let deviceArray = [];
@@ -120,7 +127,7 @@
                     });
                     filteredArray_all.push(filteredArray);
                     device_temp = '';
-                    if(filteredArray.length){
+                    if(filteredArray.length) {
                         latest_track = filteredArray[filteredArray.length - 1];
                         device_temp += '<tr class=' + getBackgroundColor(latest_track.status) + '>' +
                                             '<td><mwc-checkbox checked class="devices_checker" data-deviceid="' + latest_track.device_id + '"></mwc-checkbox></td>' + 
@@ -135,6 +142,9 @@
                 var loc_data = getLocationData(filteredArray_all);
                 console.log('loc_data',loc_data);
                 refresh_marker(loc_data);
+                console.log((end-start)/100/3600/24);
+                setSliderAttr(0, Math.floor((end-start)/1000/3600/24), 1, Math.floor((end-start)/1000/3600/24));
+                changeSlider();
             });
         }
 
@@ -219,45 +229,37 @@
             $('#slider').prop('value', value);
         }
 
-        // $('#slider').slider({
-        //     value: 1,
-        //     min: 1,
-        //     max: 5,
-        //     step: 1,
-        //     slide: function(event, ui) {
-        //         console.log(ui.value);
-        //     }
-        // });
+        $('#slider').slider({
+            value: 1,
+            min: 1,
+            max: 5,
+            step: 1,
+            slide: function(event, ui) {
+                console.log(ui.value);
+            }
+        });
 
         setSliderAttr(0,5,1,0);
 
-        // $('.devices_checker').on('click', function() {
-        //     let device_id = $(this).attr('data-deviceid');
-        //     if($(this).prop('checked')) {
-        //         for(let i = 0 ; i < filteredArray_all.length; i++) {
-        //             if(filteredArray_all[i][0].device_id === device_id) {
-        //                 filteredArray_all.splice(i, 1);
-        //                 break;
-        //             }
-        //         }
-        //         console.log('after uncheck', filteredArray_all);
-        //         refresh_marker(getLocationData(filteredArray_all));
-        //     } else {
-        //         // current_devices.push(device_id);
-        //     }
-        //     // console.log(current_devices);
-        // });
-
-        const checkbox = document.body.querySelector('mwc-checkbox');
-        console.log('dddd',checkbox);
-        checkbox.addEventListener('change', () => {
-            if(checkbox.checked){
-                console.log('a');
-            }
-            else
-                console.log('b');
-        })
     })
+
+    function getCurrentData() {
+        
+    }
+
+    function changeSlider() {
+        console.log("change slider");
+        console.log($("#slider").prop('value'))
+        let date = new moment(start_date);
+        date.add($("#slider").prop('value'), 'd');
+        console.log(date.format('MM/DD/YYYY'))
+        $("#selected_date").text(date.format("MM/DD/YYYY"));
+        updateMap();
+    }
+
+    function updateMap() {
+        console.log('updateMap');
+    }
 </script>
 
 <script src="{{ asset('page/js/tracking_map.js') }}"></script>
