@@ -73,9 +73,9 @@
                         </div>
                     </div>
                 </div>
-                <div id="trackingmap" class="col-xl-8 col-md-6 mb-5">
-                    <div class="card card-raised bg-primary bg-gradient text-white h-100">
-                    </div>
+            </div>
+            <div id="trackingmap" class="col-xl-8 col-md-6 mb-5">
+                <div class="card card-raised bg-primary bg-gradient text-white h-100">
                 </div>
             </div>
         </div>
