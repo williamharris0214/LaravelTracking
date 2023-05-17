@@ -38,7 +38,7 @@
                                         <form method="POST" action="{{ route('register') }}">
                                             @csrf
                                             <div class="mb-4">
-                                                <mwc-textfield id="name" type="text" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus class="w-100 @error('name') is-invalid @enderror" label="First Name" outlined></mwc-textfield>
+                                                <mwc-textfield id="name" type="text" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus class="w-100 @error('name') is-invalid @enderror" label="Name" outlined></mwc-textfield>
                                                 @error('name')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>

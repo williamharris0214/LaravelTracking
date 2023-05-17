@@ -184,10 +184,12 @@
                                 <div class="nav-link-icon"><i class="material-icons">dashboard</i></div>
                                 DashBoard
                             </a>
-                            <a class="nav-link" href="/user_manage" style="margin-top:10px;">
-                                <div class="nav-link-icon"><i class="material-icons">build</i></div>
-                                User Management
-                            </a>
+                            @if(Auth::user()->role === 5)
+                                <a class="nav-link" href="/user_manage" style="margin-top:10px;">
+                                    <div class="nav-link-icon"><i class="material-icons">build</i></div>
+                                    User Management
+                                </a>
+                            @endif
                             <a class="nav-link" href="/tracking" style="margin-top:10px;">
                                 <div class="nav-link-icon"><i class="material-icons">language</i></div>
                                 Tracking Data

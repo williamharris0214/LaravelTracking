@@ -30,10 +30,16 @@ class UserController extends Controller
 
     public function user_manage()
     {
-        $users = User::get();
-        $devices = Device::get();
-
-        return view('user_manage', compact('users', 'devices'));
+        $user_role = Auth::user()->role;
+        if($user_role === 5) {
+            $users = User::get();
+            $devices = Device::get();
+    
+            return view('user_manage', compact('users', 'devices'));
+        }
+        else {
+            return redirect()->route('home');
+        }
     }
 
     public function add_device(Request $request)
