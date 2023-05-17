@@ -2275,7 +2275,7 @@ progress {
   border-color: #e0e0e0;
 }
 .table > :not(caption) > * > *, .dataTable-table > :not(caption) > * > * {
-  padding: 1rem 1rem;
+  /* padding: 1rem 1rem; */
   background-color: var(--bs-table-bg);
   border-bottom-width: 1px;
   box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg);
@@ -26103,5 +26103,3 @@ tr {
   text-align: center;
   vertical-align: middle;
 }
-
-
