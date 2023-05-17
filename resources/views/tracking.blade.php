@@ -89,7 +89,7 @@
     let start_date, end_date;
 
     function updateCheckBox() {
-        $("mwc-checkbox").on('change', () => {
+        $("mwc-checkbox").on('change', (a, b, c, d) => {
             console.log('checkbox changed to ${checkbox.checked}');
         });
     }
@@ -103,7 +103,6 @@
         let deviceArray_all = [];
         let filteredArray_all = [];
         start_date = end_date = moment(Date.now());
-        console.log("AAAAA");
         updateCheckBox();
 
         if(dateRangePicker.length !== 0) {
@@ -224,10 +223,12 @@
         }
 
         setSliderAttr = function(min, max, step, value) {
+            console.log('set slider attr', min, max, step, value);
             $('#slider').prop('min', min);
             $('#slider').prop('max', max);
             $('#slider').prop('step', step);
-            $('#slider').prop('value', value);
+            $('#slider').prop('value', max);
+            setTimeout(() => $('#slider').prop('value', max), 0);
         }
     })
 
@@ -237,8 +238,6 @@
     }
 
     function changeSlider() {
-        console.log("change slider");
-        console.log($("#slider").prop('value'))
         let date = new moment(start_date);
         date.add($("#slider").prop('value'), 'd');
         console.log(date.format('MM/DD/YYYY'))
