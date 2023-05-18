@@ -109,14 +109,12 @@
             filteredArray_all.push(filteredArray);
             device_array.push(<?php echo json_encode($device->device_name); ?>);
         @endforeach
-        console.log('asss', device_array);
         updateSelect();
     }
 
     $(document).ready(function() {
         setFilteredArray();
         var loc_data = getLocationData(filteredArray_all);
-        console.log('----ready-----')
         remove_all_markers();
         refresh_marker(loc_data);
         

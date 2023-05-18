@@ -50,4 +50,57 @@ class TrackingController extends Controller
 
         return $tracks;
     }
+
+    public function getDeviceNames() {
+        $device_names = [];
+        $tracks = Track::select('device_name')->groupBy('device_name')->get();
+        foreach($tracks as $track) {
+            array_push($device_names, $track->device_name);
+        }
+        return $device_names;
+    }
+
+    public function addData(Request $request) {
+        $data = $request->all();
+        $track_datas = $data['track_data'];
+        foreach($track_datas as $track_data) {
+            $device_names = $this->getDeviceNames();
+            
+            $device_name = $track_data['device_name'];
+            $lat = $track_data['lat'];
+            $lon = $track_data['lon'];
+            $timestamp = $track_data['timestamp'];
+            $conf = $track_data['conf'];
+            $status = $track_data['status'];
+
+            $track = new Track;
+            $track->device_name = $device_name;
+            $track->lat = $lat;
+            $track->lon = $lon;
+            $track->timestamp = $timestamp;
+            $track->conf = $conf;
+            $track->status = $status;
+
+            if(in_array($device_name, $device_names)) {
+                $track->device_id = $this->getDeviceId($device_name);
+            }
+            else {
+                $device = new Device;
+                $device->device_name = $device_name;
+                $device->save();
+                $track->device_id = $device->id;
+            }
+
+            $track->save();
+        }
+        return 'asdf';
+    }
+
+    public function getDeviceId($device_name) {
+        $device = Device::where('device_name', $device_name)->first();
+        if($device) 
+            return $device->id;
+        else
+            return null;
+    }
 }

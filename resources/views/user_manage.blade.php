@@ -79,7 +79,6 @@
         const users = <?php echo json_encode($users); ?>;
         const devices = <?php echo json_encode($devices); ?>;
         let current_user_devices = [];
-        console.log(users);
 
         $('.actions-button').on('click', function() {
             const user_id = $(this).attr('data-userId');
@@ -134,13 +133,10 @@
                 } else {
                     current_devices.push(device_id);
                 }
-                console.log(current_devices);
             });
 
             $('#save_btn').on('click', function() {
                 current_user_devices = current_devices;
-                console.log(user_id);
-                console.log(current_devices);
                 $.ajax({
                     type: 'POST',
                     url: '/user_manage/add_device',
@@ -150,7 +146,6 @@
                         'devices': current_devices
                     },
                     success: function(res) {
-                        console.log(res);
                         $('#exampleModalScrollable').modal('hide');
                     },
                     error: function() {

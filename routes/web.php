@@ -26,3 +26,4 @@ Route::post('/user_manage/add_device', [UserController::class, 'add_device']);
 
 Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking');
 Route::post('/tracking/date_changed', [TrackingController::class, 'dateChanged']);
+Route::get('/tracking/add_new_data', [TrackingController::class, 'addData']);
