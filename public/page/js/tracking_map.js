@@ -34,12 +34,27 @@ function remove_all_markers()
     marker_list = {};
 }
 
+function remove_markers(device_name, position_array)
+{
+    marker_list[device_name].forEach((marker, index) => {
+        if(position_array.includes(index))
+            marker.setMap(null);
+    })
+}
+
+function add_markers(device_name, position_array)
+{
+    marker_list[device_name].forEach((marker, index) => {
+        if(position_array.includes(index)){
+            marker.setMap(map);
+        }
+    })
+}
+
 async function refresh_marker(data) {
     console.log('here');
     console.log(data);
     data = data || initialData;
-
-    remove_all_markers();
 
     const { AdvancedMarkerElement, Marker } = await google.maps.importLibrary("marker");
     const position = { lat: -25.344, lng: 131.031 };
