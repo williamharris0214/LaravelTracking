@@ -15,7 +15,7 @@ async function start_map() {
     const { Map } = await google.maps.importLibrary("maps");
     var mapProp = {
         center: {lat: 0, lng: 0},
-        zoom: 8,
+        zoom: 18,
         mapId: '0',
         mapTypeId: 'satellite'
     };
@@ -79,7 +79,9 @@ async function refresh_marker(data) {
         })
         current_group++;
     }
-    refresh_map_bound();
+    let newCenter = new google.maps.LatLng(Object.values(data)[0][0][0],Object.values(data)[0][0][1]);
+    map.setCenter(newCenter);
+    //refresh_map_bound();
 }
 
 function refresh_map_bound() {
