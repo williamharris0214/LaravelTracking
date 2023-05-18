@@ -52,8 +52,6 @@ function add_markers(device_name, position_array)
 }
 
 async function refresh_marker(data) {
-    console.log('here');
-    console.log(data);
     data = data || initialData;
 
     const { AdvancedMarkerElement, Marker } = await google.maps.importLibrary("marker");

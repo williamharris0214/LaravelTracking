@@ -67,14 +67,10 @@ getLocationData = function(d_array) {
         return res;
 }
 
-
-
 function setTextFromSlider() {
     let date = new moment(start_date);
     let value = $("#slider").prop('value');
-    console.log('--val--', value);
     date.add(value, 'd');
-    console.log(date.format('MM/DD/YYYY'))
     return date;
 }
 
@@ -132,7 +128,6 @@ function onSelectSecond() {
     remove_all_markers();
     refresh_marker(loc_data);
     cur_second_device = selectedDevice;
-    console.log(loc_data);
 }
 
 function updateMap(date, is_first) {
@@ -174,8 +169,6 @@ function updateMap(date, is_first) {
             break;
         }
     }
-    console.log('dddd',device_name);
-    console.log('dddd',filteredArray);
     if(is_left)
         remove_markers(device_name, filteredArray);
     else
@@ -197,7 +190,6 @@ function getFilteredIndex(filteredArray, start, end) {
         if(timestamp >= start && timestamp <= end)
             filteredIndexes.push(index);
     });
-    console.log('index', filteredIndexes);
     return filteredIndexes;
 }
 
@@ -276,7 +268,6 @@ exportToCSV = function(fileName) {
 }
 
 setSliderAttr = function(name, min, max, step, value) {
-    console.log('slider attr', min, max, step, value)
     $(name).prop('min', min);
     $(name).prop('max', max);
     $(name).prop('step', step);
