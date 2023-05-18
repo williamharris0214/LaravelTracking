@@ -55,9 +55,10 @@
                                                 @enderror
                                             </div>
                                             <div class="d-flex align-items-center">
-                                                <mwc-formfield label="Remember me">
+                                                <!-- <mwc-formfield label="Remember me">
                                                     <mwc-checkbox name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}></mwc-checkbox>
-                                                </mwc-formfield>
+                                                </mwc-formfield> -->
+                                                <div></div>
                                             </div>
                                             <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
                                                 @if (Route::has('password.request'))
