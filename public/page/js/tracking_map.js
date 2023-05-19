@@ -14,7 +14,7 @@ var marker_list = {};
 async function start_map() {
     const { Map } = await google.maps.importLibrary("maps");
     var mapProp = {
-        center: {lat: 0, lng: 0},
+        center: {lat: 37.7749, lng: -122.4194},
         zoom: 18,
         mapId: '0',
         mapTypeId: 'satellite'

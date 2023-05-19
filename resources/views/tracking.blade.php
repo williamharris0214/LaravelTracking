@@ -44,7 +44,7 @@
                                                     }
                                                 ?>
                                                 <tr class="{{ $background_color }}">
-                                                    <td style="width:10%;"><mwc-checkbox class="devices_checker" checked data-deviceid="{{ $device->id }}"></mwc-checkbox></td>
+                                                    <td style="width:10%;"><mwc-checkbox class="devices_checker" data-deviceid="{{ $device->id }}"></mwc-checkbox></td>
                                                     <td>{{ $device->device_name }}</td>
                                                     <td>{{ $device_status[$device_latest->status] }}</td>
                                                     <td>{{ $device_latest->dataFormatAttribute() }} Minutes</td>
@@ -66,8 +66,13 @@
                     <div class="devices-card-body">
                         <div class="card card-raised overflow-hidden">
                             <div class="card-body p-3">
-                                <input type="text" name="daterange" style="padding: 10px; width: 100%;"/>
-                                <button id="export_btn" class="btn btn-primary" style="margin-top:20px; float: right;" type="button">Export to CSV</button>
+                                <!-- <input type="text" name="daterange" style="padding: 10px; width: 100%;"/> -->
+                                <input type="text" id="datepicker1" placeholder="Select start date" style="padding: 10px; width: 100%;">
+                                <input type="text" id="datepicker2" placeholder="Select end date" style="padding: 10px; width: 100%; margin-top:10px;">
+                                <div style="display:flex; margin-top:10px; justify-content: space-between">
+                                    <button id="export_btn" class="btn btn-primary" type="button">Export to CSV</button>
+                                    <button id="apply_btn" class="btn btn-primary" style="margin-left:20px;" type="button">Apply</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -101,79 +106,71 @@
 
 @push('script')
 <script>
+    
     function setFilteredArray() {
         filteredArray_all = [];
         device_array = [];
         @foreach($devices as $device)
             filteredArray = <?php echo json_encode($device->tracks); ?>;
             filteredArray_all.push(filteredArray);
-            device_array.push(<?php echo json_encode($device->device_name); ?>);
         @endforeach
+        device_array = [];
         updateSelect();
     }
 
     $(document).ready(function() {
-        setFilteredArray();
-        var loc_data = getLocationData(filteredArray_all);
-        remove_all_markers();
-        refresh_marker(loc_data);
+         setFilteredArray();
+        // var loc_data = getLocationData(filteredArray_all);
+        // remove_all_markers();
+        // refresh_marker(loc_data);
         
         const date_now = Math.floor(Date.now() / 1000);
         const date_formated = moment.unix(date_now).format('MM/DD/YYYY');
-        var dateRangePicker = $('input[name="daterange"]');
-        
+       
         start_date = end_date = moment(Date.now());
         cur_first_sliderPos = cur_second_sliderPos = end_date;
-        updateCheckBox(filteredArray_all);
-
-        if(dateRangePicker.length !== 0) {
-            dateRangePicker.daterangepicker({
-                opens: 'left'
-            }, function(start, end, label) {
-                
-                start_date = moment(start);
-                end_date = moment(end);
-                cur_first_sliderPos = cur_second_sliderPos = end_date;
-
-                $('#devices-container').html('');
-                filteredArray_all = [];
-                let deviceArray = [];
-                let filteredArray = [];
-                let device_temp;
-                let latest_track;
-                device_array = [];
-                @foreach($devices as $device)
-                    deviceArray = <?php echo json_encode($device->tracks); ?>;
-                    filteredArray = deviceArray.filter(function(el) {
-                        const timestamp = new Date(el.timestamp).getTime();
-                        return timestamp >= Date.parse(start)/1000 && timestamp <=Date.parse(end)/1000;
-                    });
-                    filteredArray_all.push(filteredArray);
-                    device_temp = '';
-                    if(filteredArray.length) {
-                        latest_track = filteredArray[filteredArray.length - 1];
-                        device_array.push(latest_track.device_name);
-                        device_temp += '<tr class=' + getBackgroundColor(latest_track.status) + '>' +
-                                            '<td><mwc-checkbox checked class="devices_checker" data-deviceid="' + latest_track.device_id + '"></mwc-checkbox></td>' + 
-                                            '<td>' + latest_track.device_name + '</td>' + 
-                                            '<td>' + getStatusName(latest_track.status) + '</td>' + 
-                                            '<td>' + getDiffMins(latest_track.timestamp) + ' Minutes' + '</td>' + 
-                                        '</tr>';
-                        $('#devices-container').append(device_temp);
-                    }
-                @endforeach
-                var loc_data = getLocationData(filteredArray_all);
-                remove_all_markers();
-                refresh_marker(loc_data);
-                setSliderAttr('#slider_first', 0, Math.floor((end-start)/1000), 1, Math.floor((end-start)/1000));
-                setSliderAttr('#slider_second', 0, Math.floor((end-start)/1000), 1, Math.floor((end-start)/1000));
-                updateCheckBox(filteredArray_all);
-                updateSelect();
-                cur_first_device = cur_second_device = null;
-                selectedArray_all = [];
-            });
-        }
+        updateCheckBox(filteredArray_all, true);
     })
+    $('#apply_btn').on('click', function(){
+        cur_first_sliderPos = cur_second_sliderPos = end_date;
+
+        $('#devices-container').html('');
+            filteredArray_all = [];
+            let deviceArray = [];
+            let filteredArray = [];
+            let device_temp;
+            let latest_track;
+            device_array = [];
+            @foreach($devices as $device)
+                deviceArray = <?php echo json_encode($device->tracks); ?>;
+                filteredArray = deviceArray.filter(function(el) {
+                    const timestamp = new Date(el.timestamp).getTime();
+                    return timestamp >= Date.parse(start_date)/1000 && timestamp <=Date.parse(end_date)/1000;
+                });
+                filteredArray_all.push(filteredArray);
+                device_temp = '';
+                if(filteredArray.length) {
+                    latest_track = filteredArray[filteredArray.length - 1];
+                    device_temp += '<tr class=' + getBackgroundColor(latest_track.status) + '>' +
+                                        '<td><mwc-checkbox checked class="devices_checker" data-deviceid="' + latest_track.device_id + '"></mwc-checkbox></td>' + 
+                                        '<td>' + latest_track.device_name + '</td>' + 
+                                        '<td>' + getStatusName(latest_track.status) + '</td>' + 
+                                        '<td>' + getDiffMins(latest_track.timestamp) + ' Minutes' + '</td>' + 
+                                    '</tr>';
+                    $('#devices-container').append(device_temp);
+                }
+                filteredArray.length ? device_array.push(latest_track.device_name) : device_array.push('');
+            @endforeach
+            var loc_data = getLocationData(filteredArray_all);
+            remove_all_markers();
+            refresh_marker(loc_data);
+            setSliderAttr('#slider_first', 0, Math.floor((end_date-start_date)/1000), 1, Math.floor((end_date-start_date)/1000));
+            setSliderAttr('#slider_second', 0, Math.floor((end_date-start_date)/1000), 1, Math.floor((end_date-start_date)/1000));
+            updateCheckBox(filteredArray_all, false);
+            updateSelect();
+            cur_first_device = cur_second_device = null;
+            selectedArray_all = [];
+    });
 </script>
 
 <script src="{{ asset('page/js/tracking.js') }}"></script>

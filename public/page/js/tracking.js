@@ -10,17 +10,19 @@ function updateSelect() {
     $("#device_first").html('');
     $("#device_first").append('<option value="0" disabled selected>Select Device</option>');
     for(let i = 0; i < device_array.length; i++) {
-        $("#device_first").append('<option value="' + device_array[i] + '">' + device_array[i] + '</option>');
+        if(device_array[i] != '')
+            $("#device_first").append('<option value="' + device_array[i] + '">' + device_array[i] + '</option>');
     }
     $("#device_second").html('');
     $("#device_second").append('<option value="0" disabled selected>Select Device</option>');
     for(let i = 0; i < device_array.length; i++) {
-        $("#device_second").append('<option value="' + device_array[i] + '">' + device_array[i] + '</option>');
+        if(device_array[i] != '')
+            $("#device_second").append('<option value="' + device_array[i] + '">' + device_array[i] + '</option>');
     }
 }
 
-function updateCheckBox(filteredArrayInput) {
-    array = [...filteredArrayInput];
+function updateCheckBox(filteredArrayInput, is_start) {
+    array = is_start? [] : [...filteredArrayInput];
     $("mwc-checkbox").on('change', (a) => {
         const isChecked = $(a.target).prop('checked');
         const device_id = $(a.target).attr('data-deviceid');
@@ -96,7 +98,7 @@ function onSelectFirst() {
     var selectedDevice = $("#device_first").val();
     let selectedArray;
     for(let i = 0; i < filteredArray_all.length; i++) {
-        if(filteredArray_all[i][0].device_name === selectedDevice){
+        if(filteredArray_all[i].length && filteredArray_all[i][0].device_name === selectedDevice){
             selectedArray = filteredArray_all[i];
             break;
         }
@@ -115,7 +117,7 @@ function onSelectSecond() {
     var selectedDevice = $("#device_second").val();
     let selectedArray;
     for(let i = 0; i < filteredArray_all.length; i++) {
-        if(filteredArray_all[i][0].device_name === selectedDevice){
+        if(filteredArray_all[i].length && filteredArray_all[i][0].device_name === selectedDevice){
             selectedArray = filteredArray_all[i];
             break;
         }
@@ -164,7 +166,7 @@ function updateMap(date, is_first) {
     }
     let filteredArray = [];
     for(let i = 0; i < filteredArray_all.length; i++) {
-        if(filteredArray_all[i][0].device_name === device_name){
+        if(filteredArray_all[i].length && filteredArray_all[i][0].device_name === device_name){
             filteredArray = getFilteredIndex(filteredArray_all[i], start, end);
             break;
         }
@@ -274,3 +276,15 @@ setSliderAttr = function(name, min, max, step, value) {
     $(name).prop('value', max);
     setTimeout(() => $(name).prop('value', max), 0);
 }
+
+$("#datepicker1").datepicker({
+    onSelect: function(dateText, instance) {
+        start_date = moment(dateText);
+    }
+});
+
+$("#datepicker2").datepicker({
+    onSelect: function(dateText, instance) {
+        end_date = moment(dateText);
+    }
+});
