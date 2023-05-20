@@ -83,5 +83,8 @@
         <!-- Load global scripts-->
         <script type="module" src="{{ asset('theme/js/material.js') }}"></script>
         <script src="{{ asset('theme/js/scripts.js') }}"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <script src="{{ asset('page/js/login.js') }}"></script>
     </body>
 </html>

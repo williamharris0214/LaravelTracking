@@ -90,7 +90,7 @@
                         <option value="0" disabled selected>Select Device</option>
                     </select>
                 </div>
-                <mwc-slider class="col-xl-10 col-md-8" id="slider_first" min="0" max="1" value="1" step="1" class="w-100" onchange="changeFirstSlider()" pin markers></mwc-slider>
+                <mwc-slider discrete class="col-xl-10 col-md-8" id="slider_first" min="0" max="1" value="1" step="1" class="w-100" onchange="changeFirstSlider()" pin markers></mwc-slider>
             </div>
             <div class="row">
                 <div class="col-xl-2 col-md-4">
@@ -98,8 +98,12 @@
                         <option value="0" disabled selected>Select Device</option>
                     </select>
                 </div>
-                <mwc-slider class="col-xl-10 col-md-8" id="slider_second" min="0" max="1" value="1" step="1" class="w-100" onchange="changeSecondSlider()" pin markers></mwc-slider>
+                <mwc-slider discrete class="col-xl-10 col-md-8" id="slider_second" min="0" max="1" value="1" step="1" class="w-100" onchange="changeSecondSlider()" pin markers></mwc-slider>
             </div>
+            <!-- <div style="display:flex; flex-direction:column; align-items:self-end;">
+                <p id="current_first_date" style="margin-right:50px;">Device 1</p>
+                <p id="current_second_date" style="margin-right:50px;">Device 2</p>
+            </div> -->
         </div>
     </div>
 @endsection
@@ -164,8 +168,8 @@
             var loc_data = getLocationData(filteredArray_all);
             remove_all_markers();
             refresh_marker(loc_data);
-            setSliderAttr('#slider_first', 0, Math.floor((end_date-start_date)/1000), 1, Math.floor((end_date-start_date)/1000));
-            setSliderAttr('#slider_second', 0, Math.floor((end_date-start_date)/1000), 1, Math.floor((end_date-start_date)/1000));
+            //setSliderAttr('#slider_first', 0, Math.floor((end_date-start_date)/1000), 1, Math.floor((end_date-start_date)/1000));
+            //setSliderAttr('#slider_second', 0, Math.floor((end_date-start_date)/1000), 1, Math.floor((end_date-start_date)/1000));
             updateCheckBox(filteredArray_all, false);
             updateSelect();
             cur_first_device = cur_second_device = null;

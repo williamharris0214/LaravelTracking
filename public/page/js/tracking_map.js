@@ -36,19 +36,30 @@ function remove_all_markers()
 
 function remove_markers(device_name, position_array)
 {
+    let pos = {};
+    let min = marker_list[device_name].length;
     marker_list[device_name].forEach((marker, index) => {
-        if(position_array.includes(index))
+        if(position_array.includes(index)){
             marker.setMap(null);
+            min = Math.min(min, index);
+        }
     })
+    pos = marker_list[device_name][Math.max(0, min-1)].position;
+    let newCenter = new google.maps.LatLng(pos);
+    map.setCenter(newCenter);
 }
 
 function add_markers(device_name, position_array)
 {
+    let pos = {};
     marker_list[device_name].forEach((marker, index) => {
         if(position_array.includes(index)){
             marker.setMap(map);
+            pos = marker.position;
         }
     })
+    let newCenter = new google.maps.LatLng(pos);
+    map.setCenter(newCenter);
 }
 
 async function refresh_marker(data) {

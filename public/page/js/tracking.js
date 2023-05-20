@@ -5,6 +5,8 @@ let device_array = [];
 let selectedArray_all = [];
 let cur_first_device, cur_second_device;
 let cur_first_sliderPos, cur_second_sliderPos;
+let first_device_array = [];
+let second_device_array = [];
 
 function updateSelect() {
     $("#device_first").html('');
@@ -78,19 +80,21 @@ function setTextFromSlider() {
 
 function changeFirstSlider() {
     if(cur_first_device){
-        let date = new moment(start_date);
+        //let date = new moment(start_date);
         let value = $("#slider_first").prop('value');
-        date.add(value,'s');
-        updateMap(date, true);    
+        //date.add(value,'s');
+        updateMap(value, true);
+        //$("#current_first_date").html(date.format('MM/DD/YYYY hh:mm:ss a'));
     }
 }
 
 function changeSecondSlider() {
     if(cur_second_device) {
-        let date = new moment(start_date);
+        //let date = new moment(start_date);
         let value = $("#slider_second").prop('value');
-        date.add(value,'s');
-        updateMap(date, false);
+        //date.add(value,'s');
+        updateMap(value, false);
+        //$("#current_first_date").html(date.format('MM/DD/YYYY hh:mm:ss a'));
     }
 }
 
@@ -111,6 +115,8 @@ function onSelectFirst() {
     var loc_data = getLocationData(selectedArray_all);
     remove_all_markers();
     refresh_marker(loc_data);
+    first_device_array = selectedArray;
+    setSliderAttr('#slider_first', 0, selectedArray.length-1, 1, selectedArray.length-1);
 }
 
 function onSelectSecond() {
@@ -130,6 +136,8 @@ function onSelectSecond() {
     remove_all_markers();
     refresh_marker(loc_data);
     cur_second_device = selectedDevice;
+    second_device_array = selectedArray;
+    setSliderAttr('#slider_second', 0, selectedArray.length-1, 1, selectedArray.length-1);
 }
 
 function updateMap(date, is_first) {
@@ -139,13 +147,13 @@ function updateMap(date, is_first) {
     if(is_first) {
         device_name = cur_first_device;
         if(date < cur_first_sliderPos) {
-            start = date.unix();
-            end = cur_first_sliderPos.unix();
+            start = date;
+            end = cur_first_sliderPos;
             is_left = true;
         }
         else {
-            start = cur_first_sliderPos.unix();
-            end = date.unix();
+            start = cur_first_sliderPos;
+            end = date;
             is_left = false;
         }
         cur_first_sliderPos = date;
@@ -153,13 +161,13 @@ function updateMap(date, is_first) {
     else {
         device_name = cur_second_device;
         if(date < cur_second_sliderPos) {
-            start = date.unix();
-            end = cur_second_sliderPos.unix();
+            start = date;
+            end = cur_second_sliderPos;
             is_left = true;
         }
         else {
-            start = cur_second_sliderPos.unix();
-            end = date.unix();
+            start = cur_second_sliderPos;
+            end = date;
             is_left = false;
         }
         cur_second_sliderPos = date;
@@ -188,8 +196,8 @@ function getFilteredArray(filteredArray, start, end) {
 function getFilteredIndex(filteredArray, start, end) {
     let filteredIndexes = [];
     filteredArray.map(function(el, index) {
-        const timestamp = new Date(el.timestamp).getTime();
-        if(timestamp >= start && timestamp <= end)
+        //const timestamp = new Date(el.timestamp).getTime();
+        if(index >= start && index <= end)
             filteredIndexes.push(index);
     });
     return filteredIndexes;
@@ -270,11 +278,15 @@ exportToCSV = function(fileName) {
 }
 
 setSliderAttr = function(name, min, max, step, value) {
-    $(name).prop('min', min);
-    $(name).prop('max', max);
-    $(name).prop('step', step);
-    $(name).prop('value', max);
-    setTimeout(() => $(name).prop('value', max), 0);
+    // $(name).prop('min', min);
+    // $(name).prop('max', max);
+    // $(name).prop('step', step);
+    // $(name).prop('value', value);
+    $(name).get(0).min = min;
+    $(name).get(0).max = max;
+    $(name).get(0).step = step;
+    // $(name).get(0).value = value;
+    setTimeout(() => $(name).get(0).value = value, 0);
 }
 
 $("#datepicker1").datepicker({
@@ -287,4 +299,17 @@ $("#datepicker2").datepicker({
     onSelect: function(dateText, instance) {
         end_date = moment(dateText);
     }
+});
+
+$(document).ready(() => {
+    const myValueToValueIndicatorTransform = function(value) {
+        const obj = first_device_array[value];
+        if(obj === undefined)
+            return '';
+        const res = moment.unix(first_device_array[value].timestamp).format("hh:mm:ss");
+        return res;
+    };
+
+    $('#slider_first').get(0).valueToValueIndicatorTransform = myValueToValueIndicatorTransform;
+    $('#slider_second').get(0).valueToValueIndicatorTransform = myValueToValueIndicatorTransform;
 });

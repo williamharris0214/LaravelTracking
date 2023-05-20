@@ -26103,3 +26103,7 @@ tr {
   text-align: center;
   vertical-align: middle;
 }
+
+.mdc-slider__value-indicator {
+  height: 50px !important; /* Adjust this value as needed */
+}
