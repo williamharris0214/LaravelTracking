@@ -7,6 +7,7 @@ let cur_first_device, cur_second_device;
 let cur_first_sliderPos, cur_second_sliderPos;
 let first_device_array = [];
 let second_device_array = [];
+let checked_array = [];
 
 function updateSelect() {
     $("#device_first").html('');
@@ -55,6 +56,7 @@ function updateCheckBox(filteredArrayInput, is_start) {
         updateSelect();
         cur_first_device = cur_second_device = null;
         selectedArray_all = [];
+        checked_array = array;
     });
 }
 
@@ -255,17 +257,30 @@ $('#export_btn').on('click', function(){
 });
 
 exportToCSV = function(fileName) {
-    if(!filteredArray_all.length)
-        return;
+    // if(!filteredArray_all.length)
+    //     return;
+    let cnt = 0;
     const csvData = [];
-    const headers = Object.keys(filteredArray_all[0][0]).join(",");
+    //const headers = Object.keys(filteredArray_all[0][0]).join(",");
+    const headers = "id,device_id,device_name,lat,lon,timestamp,conf,status,isodatetime"  
     csvData.push(headers);
-    for(let i = 0; i < filteredArray_all.length; i++) {
-        for(let j = 0 ; j < filteredArray_all[i].length; j++) {
-            const values = Object.values(filteredArray_all[i][j]).join(",");
-            csvData.push(values);
+    // for(let i = 0; i < filteredArray_all.length; i++) {
+    //     for(let j = 0 ; j < filteredArray_all[i].length; j++) {
+    //         const values = Object.values(filteredArray_all[i][j]).join(",");
+    //         csvData.push(values);
+    //     }
+    // }
+    for(let i = 0; i < checked_array.length; i++) {
+        if(checked_array[i].length){
+            for(let j = 0 ; j < checked_array[i].length; j++) {
+                const values = Object.values(checked_array[i][j]).join(",");
+                csvData.push(values);
+            }
+            cnt++;
         }
     }
+    if(cnt === 0)
+        return;
     const csvContent = csvData.join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;"});
     const url = URL.createObjectURL(blob);

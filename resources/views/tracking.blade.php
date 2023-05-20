@@ -139,41 +139,42 @@
         cur_first_sliderPos = cur_second_sliderPos = end_date;
 
         $('#devices-container').html('');
-            filteredArray_all = [];
-            let deviceArray = [];
-            let filteredArray = [];
-            let device_temp;
-            let latest_track;
-            device_array = [];
-            @foreach($devices as $device)
-                deviceArray = <?php echo json_encode($device->tracks); ?>;
-                filteredArray = deviceArray.filter(function(el) {
-                    const timestamp = new Date(el.timestamp).getTime();
-                    return timestamp >= Date.parse(start_date)/1000 && timestamp <=Date.parse(end_date)/1000;
-                });
-                filteredArray_all.push(filteredArray);
-                device_temp = '';
-                if(filteredArray.length) {
-                    latest_track = filteredArray[filteredArray.length - 1];
-                    device_temp += '<tr class=' + getBackgroundColor(latest_track.status) + '>' +
-                                        '<td><mwc-checkbox checked class="devices_checker" data-deviceid="' + latest_track.device_id + '"></mwc-checkbox></td>' + 
-                                        '<td>' + latest_track.device_name + '</td>' + 
-                                        '<td>' + getStatusName(latest_track.status) + '</td>' + 
-                                        '<td>' + getDiffMins(latest_track.timestamp) + ' Minutes' + '</td>' + 
-                                    '</tr>';
-                    $('#devices-container').append(device_temp);
-                }
-                filteredArray.length ? device_array.push(latest_track.device_name) : device_array.push('');
-            @endforeach
-            var loc_data = getLocationData(filteredArray_all);
-            remove_all_markers();
-            refresh_marker(loc_data);
-            //setSliderAttr('#slider_first', 0, Math.floor((end_date-start_date)/1000), 1, Math.floor((end_date-start_date)/1000));
-            //setSliderAttr('#slider_second', 0, Math.floor((end_date-start_date)/1000), 1, Math.floor((end_date-start_date)/1000));
-            updateCheckBox(filteredArray_all, false);
-            updateSelect();
-            cur_first_device = cur_second_device = null;
-            selectedArray_all = [];
+        filteredArray_all = [];
+        let deviceArray = [];
+        let filteredArray = [];
+        let device_temp;
+        let latest_track;
+        device_array = [];
+        @foreach($devices as $device)
+            deviceArray = <?php echo json_encode($device->tracks); ?>;
+            filteredArray = deviceArray.filter(function(el) {
+                const timestamp = new Date(el.timestamp).getTime();
+                return timestamp >= Date.parse(start_date)/1000 && timestamp <=Date.parse(end_date)/1000;
+            });
+            filteredArray_all.push(filteredArray);
+            device_temp = '';
+            if(filteredArray.length) {
+                latest_track = filteredArray[filteredArray.length - 1];
+                device_temp += '<tr class=' + getBackgroundColor(latest_track.status) + '>' +
+                                    '<td><mwc-checkbox checked class="devices_checker" data-deviceid="' + latest_track.device_id + '"></mwc-checkbox></td>' + 
+                                    '<td>' + latest_track.device_name + '</td>' + 
+                                    '<td>' + getStatusName(latest_track.status) + '</td>' + 
+                                    '<td>' + getDiffMins(latest_track.timestamp) + ' Minutes' + '</td>' + 
+                                '</tr>';
+                $('#devices-container').append(device_temp);
+            }
+            filteredArray.length ? device_array.push(latest_track.device_name) : device_array.push('');
+        @endforeach
+        checked_array = filteredArray_all;
+        var loc_data = getLocationData(filteredArray_all);
+        remove_all_markers();
+        refresh_marker(loc_data);
+        //setSliderAttr('#slider_first', 0, Math.floor((end_date-start_date)/1000), 1, Math.floor((end_date-start_date)/1000));
+        //setSliderAttr('#slider_second', 0, Math.floor((end_date-start_date)/1000), 1, Math.floor((end_date-start_date)/1000));
+        updateCheckBox(filteredArray_all, false);
+        updateSelect();
+        cur_first_device = cur_second_device = null;
+        selectedArray_all = [];
     });
 </script>
 
