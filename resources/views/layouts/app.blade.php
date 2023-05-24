@@ -185,10 +185,10 @@
                         <div class="nav">
                             <!-- Drawer link (Dashboard)-->
                             @if(Auth::user()->role === 5)
-                            <a class="nav-link" href="/" style="margin-top:30px;">
+                            <!-- <a class="nav-link" href="/" style="margin-top:30px;">
                                 <div class="nav-link-icon"><i class="material-icons">dashboard</i></div>
                                 DashBoard
-                            </a>
+                            </a> -->
                             <a class="nav-link" href="/user_manage" style="margin-top:10px;">
                                 <div class="nav-link-icon"><i class="material-icons">build</i></div>
                                 User Management

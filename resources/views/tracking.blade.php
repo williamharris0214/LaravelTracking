@@ -88,7 +88,7 @@
                         <option value="0" disabled selected>Select Device</option>
                     </select>
                 </div>
-                <mwc-slider discrete class="col-xl-10 col-md-8" id="slider_first" min="0" max="1" value="1" step="1" class="w-100" onchange="changeFirstSlider()" pin markers></mwc-slider>
+                <mwc-slider discrete class="col-xl-10 col-md-8" id="slider_first" min="0" max="1" value="1" step="1" class="w-100" oninput="changeFirstSlider()" pin markers></mwc-slider>
             </div>
             <div class="row">
                 <div class="col-xl-2 col-md-4">
@@ -96,7 +96,7 @@
                         <option value="0" disabled selected>Select Device</option>
                     </select>
                 </div>
-                <mwc-slider discrete class="col-xl-10 col-md-8" id="slider_second" min="0" max="1" value="1" step="1" class="w-100" onchange="changeSecondSlider()" pin markers></mwc-slider>
+                <mwc-slider discrete class="col-xl-10 col-md-8" id="slider_second" min="0" max="1" value="1" step="1" class="w-100" oninput="changeSecondSlider()" pin markers></mwc-slider>
             </div>
             <!-- <div style="display:flex; flex-direction:column; align-items:self-end;">
                 <p id="current_first_date" style="margin-right:50px;">Device 1</p>

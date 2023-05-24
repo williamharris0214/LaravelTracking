@@ -17,13 +17,14 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Auth::routes();
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/user_manage', [UserController::class, 'user_manage'])->name('manage');
     Route::post('/user_manage/add_device', [UserController::class, 'add_device']);
     
+    Route::get('/', [TrackingController::class, 'index'])->name('tracking');
     Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking');
     Route::post('/tracking/date_changed', [TrackingController::class, 'dateChanged']);
 });
