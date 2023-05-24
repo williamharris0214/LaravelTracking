@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\TrackingController;
 
 class HomeController extends Controller
 {
@@ -26,6 +27,10 @@ class HomeController extends Controller
     public function index()
     {
         $user = Auth::user()->name;
-        return view('home', compact('user'));
+        $role = Auth::user()->role;
+        if($role === 5)
+            return view('home', compact('user'));
+        else
+            return redirect()->action([TrackingController::class, 'index']);
     }
 }

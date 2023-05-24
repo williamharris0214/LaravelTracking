@@ -184,15 +184,15 @@
                     <div class="drawer-menu">
                         <div class="nav">
                             <!-- Drawer link (Dashboard)-->
+                            @if(Auth::user()->role === 5)
                             <a class="nav-link" href="/" style="margin-top:30px;">
                                 <div class="nav-link-icon"><i class="material-icons">dashboard</i></div>
                                 DashBoard
                             </a>
-                            @if(Auth::user()->role === 5)
-                                <a class="nav-link" href="/user_manage" style="margin-top:10px;">
-                                    <div class="nav-link-icon"><i class="material-icons">build</i></div>
-                                    User Management
-                                </a>
+                            <a class="nav-link" href="/user_manage" style="margin-top:10px;">
+                                <div class="nav-link-icon"><i class="material-icons">build</i></div>
+                                User Management
+                            </a>
                             @endif
                             <a class="nav-link" href="/tracking" style="margin-top:10px;">
                                 <div class="nav-link-icon"><i class="material-icons">language</i></div>
@@ -234,6 +234,14 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+        @if(Auth::user()->role !== 5)
+            //document.body.classList.toggle('drawer-toggled');
+            // const drawer_nav = document.getElementById('layoutDrawer_nav');
+            // drawer_nav.style.transform = 'translateX(-279px)';
+            if (window.innerWidth >= 1200) {
+                document.body.classList.toggle("drawer-toggled");
+            }
+        @endif
     </script>
     @stack('script')
 </body>

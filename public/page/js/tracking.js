@@ -8,6 +8,8 @@ let cur_first_sliderPos, cur_second_sliderPos;
 let first_device_array = [];
 let second_device_array = [];
 let checked_array = [];
+let first_scroll_range = 1, second_scroll_range = 1;
+let first_device_date, seconde_device_date;
 
 function updateSelect() {
     $("#device_first").html('');
@@ -114,6 +116,7 @@ function onSelectFirst() {
     else
         selectedArray_all.splice(0, 0, selectedArray);
     cur_first_device = selectedDevice;
+    $("#first_device_history").html(cur_first_device + ' History');
     var loc_data = getLocationData(selectedArray_all);
     remove_all_markers();
     refresh_marker(loc_data);
@@ -138,6 +141,7 @@ function onSelectSecond() {
     remove_all_markers();
     refresh_marker(loc_data);
     cur_second_device = selectedDevice;
+    $("#second_device_history").html(cur_second_device + ' History');
     second_device_array = selectedArray;
     setSliderAttr('#slider_second', 0, selectedArray.length-1, 1, selectedArray.length-1);
 }
@@ -175,16 +179,56 @@ function updateMap(date, is_first) {
         cur_second_sliderPos = date;
     }
     let filteredArray = [];
+    let savedArray = [];
     for(let i = 0; i < filteredArray_all.length; i++) {
         if(filteredArray_all[i].length && filteredArray_all[i][0].device_name === device_name){
             filteredArray = getFilteredIndex(filteredArray_all[i], start, end);
+            savedArray = filteredArray_all[i];
             break;
         }
     }
-    if(is_left)
-        remove_markers(device_name, filteredArray);
-    else
-        add_markers(device_name, filteredArray);
+    if(is_left){
+        let pos = remove_markers(device_name, filteredArray);
+        if(is_first) {
+            $('#first_device_history_table').html('<tr>'+
+                '<td style="padding:1rem;">'+ moment.unix(savedArray[filteredArray[0]].timestamp).format('MM/DD/YYYY')+ '</td>'+
+                '<td style="padding:1rem;">'+ moment.unix(savedArray[filteredArray[0]].timestamp).format('hh:mm:ss')+ '</td>'+
+                '<td style="padding:1rem;">'+ '(' + pos.lat + ', ' + pos.lng +')' + '</td>'+
+                '</tr>');
+        }
+        else {
+            $('#second_device_history_table').html('<tr>'+
+                '<td style="padding:1rem;">'+ moment.unix(savedArray[filteredArray[0]].timestamp).format('MM/DD/YYYY')+ '</td>'+
+                '<td style="padding:1rem;">'+ moment.unix(savedArray[filteredArray[0]].timestamp).format('hh:mm:ss')+ '</td>'+
+                '<td style="padding:1rem;">'+ '(' + pos.lat + ', ' + pos.lng +')' + '</td>'+
+                '</tr>');
+        }
+    }
+    else{
+        let res = add_markers(device_name, filteredArray, is_first ? first_scroll_range : second_scroll_range);
+        if(is_first){
+            $('#first_device_history_table').html('');
+            res.forEach((obj) => {
+                $('#first_device_history_table').append('<tr>' +
+                    '<td style="padding:1rem;">' + moment.unix(savedArray[obj.index].timestamp).format('MM/DD/YYYY') + '</td>' + 
+                    '<td style="padding:1rem;">' + moment.unix(savedArray[obj.index].timestamp).format('hh:mm:ss') + '</td>' + 
+                    '<td style="padding:1rem;">' + '(' + obj.pos.lat + ', ' + obj.pos.lng +')' + '</td>' + 
+                    '</tr>'
+                );
+            });
+        }
+        else {
+            $('#second_device_history_table').html('');
+            res.forEach((obj) => {
+                $('#second_device_history_table').append('<tr>' +
+                    '<td style="padding:1rem;">' + moment.unix(savedArray[obj.index].timestamp).format('MM/DD/YYYY') + '</td>' + 
+                    '<td style="padding:1rem;">' + moment.unix(savedArray[obj.index].timestamp).format('hh:mm:ss') + '</td>' + 
+                    '<td style="padding:1rem;">' + '(' + obj.pos.lat + ', ' + obj.pos.lng +')' + '</td>' + 
+                    '</tr>'
+                );
+            });
+        }
+    }
 }
 
 function getFilteredArray(filteredArray, start, end) {
@@ -316,15 +360,41 @@ $("#datepicker2").datepicker({
     }
 });
 
+function onScrollRangeFirst() {
+    first_scroll_range = Number($('#first_scroll_range').val());
+    if(!Number.isInteger(first_scroll_range) || first_scroll_range < 1){
+        $('#first_scroll_range').val(1);
+        first_scroll_range = 1;
+    }
+}
+
+function onScrollRangeSecond() {
+    second_scroll_range = Number($('#second_scroll_range').val());
+    if(!Number.isInteger(second_scroll_range) || second_scroll_range < 1){
+        $('#second_scroll_range').val(1);
+        second_scroll_range = 1;
+    }
+}
+
 $(document).ready(() => {
     const myValueToValueIndicatorTransform = function(value) {
         const obj = first_device_array[value];
         if(obj === undefined)
             return '';
-        const res = moment.unix(first_device_array[value].timestamp).format("hh:mm:ss");
+        const res = moment.unix(first_device_array[value].timestamp).format("MM/DD/YYYY hh:mm:ss");
+        first_device_date = res;
+        return res;
+    };
+
+    const myValueToValueIndicatorTransformX = function(value) {
+        const obj = second_device_array[value];
+        if(obj === undefined)
+            return '';
+        const res = moment.unix(second_device_array[value].timestamp).format("MM/DD/YYYY hh:mm:ss");
+        seconde_device_date = res;
         return res;
     };
 
     $('#slider_first').get(0).valueToValueIndicatorTransform = myValueToValueIndicatorTransform;
-    $('#slider_second').get(0).valueToValueIndicatorTransform = myValueToValueIndicatorTransform;
+    $('#slider_second').get(0).valueToValueIndicatorTransform = myValueToValueIndicatorTransformX;
 });

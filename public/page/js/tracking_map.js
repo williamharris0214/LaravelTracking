@@ -17,7 +17,8 @@ async function start_map() {
         center: {lat: 37.7749, lng: -122.4194},
         zoom: 18,
         mapId: '0',
-        mapTypeId: 'satellite'
+        mapTypeId: 'satellite',
+        gestureHandling: 'greedy'
     };
     
     map = new Map($('#trackingmap')[0], mapProp);
@@ -39,27 +40,72 @@ function remove_markers(device_name, position_array)
     let pos = {};
     let min = marker_list[device_name].length;
     marker_list[device_name].forEach((marker, index) => {
-        if(position_array.includes(index)){
-            marker.setMap(null);
+        if(index == position_array[0]){
+            marker.setMap(map);
             min = Math.min(min, index);
         }
-    })
-    pos = marker_list[device_name][Math.max(0, min-1)].position;
+        else {
+            marker.setMap(null);
+        }
+    });
+    pos = marker_list[device_name][Math.max(0, min)].position;
     let newCenter = new google.maps.LatLng(pos);
     map.setCenter(newCenter);
+    return pos;
 }
 
-function add_markers(device_name, position_array)
+function add_markers(device_name, position_array, step)
 {
     let pos = {};
-    marker_list[device_name].forEach((marker, index) => {
-        if(position_array.includes(index)){
-            marker.setMap(map);
-            pos = marker.position;
+    let start = position_array[0];
+    let end = position_array[position_array.length-1];
+    let k = end - start;
+    let t = step - 1;
+    let y = k % t;
+    let m = (k - y) / t;
+    let x = t - y;
+    let filtered_array = [];
+    let temp = start;
+    let res = [];
+    if(step > 1) {
+        for(let i = 0 ; i < step; i++){
+            filtered_array.push(temp);
+            if(i < x)
+                temp += m;
+            else
+                temp += (m + 1);
         }
-    })
+    }
+    else if(step == 1) {
+        filtered_array.push(position_array[position_array.length-1]);
+    }
+
+    marker_list[device_name].forEach((marker, index) => {
+        if(step <= 0) {
+            if(position_array.length-1 == index) {
+                marker.setMap(map);
+                pos = marker.position;
+                res.push(pos);
+                return;
+            }
+        }
+        else{
+            if(filtered_array.includes(index)){
+                marker.setMap(map);
+                pos = marker.position;
+                obj = {};
+                obj.pos = pos;
+                obj.index = index;
+                res.push(obj);
+            }
+            else
+                marker.setMap(null);
+        }
+    });
+    marker_list[device_name]
     let newCenter = new google.maps.LatLng(pos);
     map.setCenter(newCenter);
+    return res;
 }
 
 async function refresh_marker(data) {
@@ -75,7 +121,7 @@ async function refresh_marker(data) {
         marker_list[device_name] = [];
         positions.forEach((pos, index) => {
             let is_special = false;
-            if(index === positions.length - 1)
+            if(index == positions.length - 1)
                 is_special = true;
             let position = {lat: pos[0], lng: pos[1]};
             const marker = new AdvancedMarkerElement({
@@ -136,7 +182,7 @@ function create_marker(group_index, title, is_special) {
     group_index = group_index % colorGroup.length;
     var markerIcon = document.createElement('div');
 
-    if(is_special === true) {
+    if(is_special == true) {
         markerIcon.style.borderRadius = '15px';
         markerIcon.style.borderColor = 'darkred';
         markerIcon.style.width = '30px';

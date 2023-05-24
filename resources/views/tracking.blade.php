@@ -79,8 +79,6 @@
                 </div>
             </div>
             <div id="trackingmap" class="col-xl-8 col-md-6 mb-5">
-                <div class="card card-raised bg-primary bg-gradient text-white h-100">
-                </div>
             </div>
         </div>
         <div>
@@ -104,6 +102,72 @@
                 <p id="current_first_date" style="margin-right:50px;">Device 1</p>
                 <p id="current_second_date" style="margin-right:50px;">Device 2</p>
             </div> -->
+        </div>
+        <div style="margin-top:30px; display:flex; width:100%">
+            <div class="card card-raised" style="height: 500px; flex-grow:1;">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div id="first_device_history" class="fw-500">History</div>
+                        <div style="float:right;">Points to show: <input oninput="check(this)" type="number" value="1" min="1" name="first_scroll_range" id="first_scroll_range" onchange="onScrollRangeFirst()"/></div>
+                    </div>
+                </div>
+                <div class="devices-card-body">
+                    <div class="overflow-hidden">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th style="background-color:lavender; padding:1rem;" scope="col">Date</th>
+                                            <th style="background-color:lavender; padding:1rem;" scope="col">Time</th>
+                                            <th style="background-color:lavender; padding:1rem;" scope="col">Position</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="first_device_history_table">
+                                        <tr>
+                                            <td style="padding:1rem;">05/10/2023</td>
+                                            <td style="padding:1rem;">10:30:21</td>
+                                            <td style="padding:1rem;">(10.342, 11.234)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-raised" style="height: 500px; flex-grow:1; margin-left:30px">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div id="second_device_history" class="fw-500">History</div>
+                        <div style="float:right;">Points to show: <input type="number" value="1" min="1" name="second_scroll_range" id="second_scroll_range" onchange="onScrollRangeSecond()"/></div>
+                    </div>
+                </div>
+                <div class="devices-card-body">
+                    <div class="overflow-hidden">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th style="background-color:lavender; padding:1rem;" scope="col">Date</th>
+                                            <th style="background-color:lavender; padding:1rem;" scope="col">Time</th>
+                                            <th style="background-color:lavender; padding:1rem;" scope="col">Position</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="second_device_history_table">
+                                        <tr>
+                                            <td style="padding:1rem;">05/10/2023</td>
+                                            <td style="padding:1rem;">10:30:21</td>
+                                            <td style="padding:1rem;">(10.342, 11.234)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
