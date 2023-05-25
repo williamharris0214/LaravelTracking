@@ -47,7 +47,7 @@
                                                     <td style="width:10%;"><mwc-checkbox class="devices_checker" data-deviceid="{{ $device->id }}"></mwc-checkbox></td>
                                                     <td>{{ $device->device_name }}</td>
                                                     <td>{{ $device_status[$device_latest->status] }}</td>
-                                                    <td>{{ $device_latest->dataFormatAttribute() }} Minutes</td>
+                                                    <td>{{ $device_latest->dataFormatAttribute() }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -67,8 +67,8 @@
                         <div class="card card-raised overflow-hidden">
                             <div class="card-body p-3">
                                 <!-- <input type="text" name="daterange" style="padding: 10px; width: 100%;"/> -->
-                                <input type="text" id="datepicker1" placeholder="Select start date" style="padding: 10px; width: 100%;">
-                                <input type="text" id="datepicker2" placeholder="Select end date" style="padding: 10px; width: 100%; margin-top:10px;">
+                                <input type="datetime-local" id="datepicker1" placeholder="Select start date" style="padding: 10px; width: 100%;">
+                                <input type="datetime-local" id="datepicker2" placeholder="Select end date" style="padding: 10px; width: 100%; margin-top:10px;">
                                 <div style="display:flex; margin-top:10px; justify-content: space-between">
                                     <button id="export_btn" class="btn btn-primary" type="button">Export to CSV</button>
                                     <button id="apply_btn" class="btn btn-primary" style="margin-left:20px;" type="button">Apply</button>
@@ -218,12 +218,16 @@
             filteredArray_all.push(filteredArray);
             device_temp = '';
             if(filteredArray.length) {
-                latest_track = filteredArray[filteredArray.length - 1];
+                latest_track = filteredArray[0];
+                filteredArray.forEach((obj) => {
+                    if(obj.timestamp >= latest_track.timestamp)
+                        latest_track = obj;
+                })
                 device_temp += '<tr class=' + getBackgroundColor(latest_track.status) + '>' +
                                     '<td><mwc-checkbox checked class="devices_checker" data-deviceid="' + latest_track.device_id + '"></mwc-checkbox></td>' + 
                                     '<td>' + latest_track.device_name + '</td>' + 
                                     '<td>' + getStatusName(latest_track.status) + '</td>' + 
-                                    '<td>' + getDiffMins(latest_track.timestamp) + ' Minutes' + '</td>' + 
+                                    '<td>' + getDiffMins(latest_track.timestamp) + '</td>' + 
                                 '</tr>';
                 $('#devices-container').append(device_temp);
             }

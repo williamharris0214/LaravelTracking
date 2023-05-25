@@ -289,8 +289,19 @@ getStatusName = function(status) {
 
 getDiffMins = function(timestamp) {
     const now = Math.floor(Date.now() / 1000);
-    const diffInMinutes = Math.floor((now - timestamp) / 60);
-    return diffInMinutes;
+    let diffInMinutes = Math.floor((now - timestamp) / 60);
+    let res = `${diffInMinutes} Minutes`;
+    if(diffInMinutes >= 60) {
+        diffInMinutes = Math.round(diffInMinutes / 60);
+        if(diffInMinutes >= 24)
+        {
+            diffInMinutes = Math.round(diffInMinutes / 24);
+            res = `${diffInMinutes} Days`;
+        }
+        else
+            res = `${diffInMinutes} Hours`; 
+    }
+    return res;
 }
 
 $('#export_btn').on('click', function(){
@@ -348,16 +359,26 @@ setSliderAttr = function(name, min, max, step, value) {
     setTimeout(() => $(name).get(0).value = value, 0);
 }
 
-$("#datepicker1").datepicker({
-    onSelect: function(dateText, instance) {
-        start_date = moment(dateText);
-    }
+// $("#datepicker1").datepicker({
+//     onSelect: function(dateText, instance) {
+//         start_date = moment(dateText);
+//     }
+// });
+
+// $("#datepicker2").datepicker({
+//     onSelect: function(dateText, instance) {
+//         end_date = moment(dateText);
+//     }
+// });
+
+$("#datepicker1").on("change", function() {
+    let datetimeValue = $(this).val();
+    start_date = moment(datetimeValue);
 });
 
-$("#datepicker2").datepicker({
-    onSelect: function(dateText, instance) {
-        end_date = moment(dateText);
-    }
+$("#datepicker2").on("change", function() {
+    let datetimeValue = $(this).val();
+    end_date = moment(datetimeValue);
 });
 
 function onScrollRangeFirst() {

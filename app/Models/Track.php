@@ -32,6 +32,18 @@ class Track extends Model
         $now = Carbon::now();
         $datetime = Carbon::createFromTimestamp($this->timestamp);
         $diffInMinutes = $datetime->diffInMinutes($now);
-        return $diffInMinutes;
+        
+        $res = $diffInMinutes . ' Minutes';
+        if($diffInMinutes >= 60) {
+            $diffInMinutes = round($diffInMinutes / 60);
+            if($diffInMinutes >= 24) {
+                $diffInMinutes = round($diffInMinutes / 24);
+                $res = $diffInMinutes . ' Days';
+            }
+            else {
+                $res = $diffInMinutes . ' Hours';
+            }
+        }
+        return $res;
     }
 }
