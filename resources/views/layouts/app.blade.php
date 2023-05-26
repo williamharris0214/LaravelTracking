@@ -37,7 +37,14 @@
                 <!-- Drawer toggle button -->
                 <button class="btn btn-lg btn-icon order-1 order-lg-0" id="drawerToggle" href="javascript:void(0);"><i class="material-icons">menu</i></button>
                 <!-- Navbar brand -->
-                <a class="navbar-brand me-auto" href="/"><div class="text-uppercase font-monospace">TRACKING PRO</div></a>
+                <a class="navbar-brand me-auto" href="/">
+                <div class="text-uppercase font-monospace">
+                    TRACKING PRO
+                    @if(Auth::user()->role === 5)
+                        <small style="color: #0FF0FC">Admin</small>
+                    @endif
+                </div>
+                </a>
                 <!-- Navbar items -->
                 <div class="d-flex align-items-center mx-3 me-lg-0">
                     <!-- Navbar-->
@@ -74,7 +81,7 @@
                                 <li>
                                     <a class="dropdown-item" href="#!">
                                         <div class="dropdown-item-content">
-                                            <div class="dropdown-item-content-text"><div class="text-truncate d-inline-block" style="max-width: 18rem">Welcome to our group! It's good to see new members and I know you will do great!</div></div>
+                                            <div class="dropdown-item-content-text"><div class="text-truncate d-inline-block" style="max-width: 18rem">Welcome to our group! It is good to see new members and I know you will do great!</div></div>
                                             <div class="dropdown-item-content-subtext">Mar 8, 2021 &middot; Celia J. Knight</div>
                                         </div>
                                     </a>

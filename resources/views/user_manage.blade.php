@@ -117,10 +117,16 @@
 
 @push('script')
 <script>
+    let users = <?php echo json_encode($users); ?>;
+    let devices = <?php echo json_encode($devices); ?>;
+    let current_user_devices = [];
+    let current_user = null;
+
     $(document).ready(function() {
-        const users = <?php echo json_encode($users); ?>;
-        const devices = <?php echo json_encode($devices); ?>;
-        let current_user_devices = [];
+        
+        
+        console.log(users);
+        console.log(devices);
 
         $('.add-button').on('click', function() {
             $("#modal_btn_new").click();
@@ -137,37 +143,71 @@
                         'new_email': new_user_email,
                         'new_pwd': new_user_pwd
                     },
+                    /*
+                    <tr trdata="{{ $user->id }}" onclick="onUserClicked()">
+                        <th width="10%">{{ $user->id }}</th>
+                        <td>{{ $user->name }}</td>
+                        <td width="20%" style="padding:0.5rem;">
+                            <button data-userId="{{ $user->id }}" class="btn btn-primary actions-button">Assign to Device</button>
+                        </td>
+                    </tr>
+                    */
                     success: function(res) {
                         console.log(res);
-                        // $('#user_container').append('<tr trdata="' + res.id +'" onclick="onUserClicked()">' + 
-                        // '<th width="10%">' + res.id + '</th>' + 
-                        // '<td>' + res.name + '</td>' +
-                        // '<td width="20%" style="padding:0.5rem;">' + '<button data-userId="' + res.id + '" class="btn btn-primary actions-button">Assign to Device</button></td>' +
-                        // '</tr>')
-                        //$('#exampleModalScrollable_new').modal('hide');
+                        let new_user_id = res['id'];
+                        let new_user_devices = res['devices'];
+                        new_user_name = res['name'];
+                        new_user_email = res['email'];
+
+                        // control view
+                        var $user_table = $("#user_container");
+                        var html = [
+                            `<tr trdata="${new_user_id}" onclick="onUserClicked()">`,
+                                `<th width="10%">${new_user_id}</th>`,
+                                `<td>${new_user_name}</td>`,
+                                '<td width="20%" style="padding:0.5rem;">',
+                                    `<button data-userId="${new_user_id}" class="btn btn-primary actions-button">Assign to Device</button>`,
+                                '</td>',
+                            '</tr>'
+                        ].join('\n');
+                        
+                        $user_table.append(html);
+                        refresh_device_event();
+                        //control logic
+                        users.push({
+                            'id': new_user_id,
+                            'name': new_user_name,
+                            'email': new_user_email,
+                            'devices' : new_user_devices,
+                        })
+                        $('#exampleModalScrollable_new').modal('hide');
                     },
                     error: function(err) {
                         alert("Failed to create a new user");
+                        $('#exampleModalScrollable_new').modal('hide');
                     }
                 })
             });
         });
-
-        $('.actions-button').on('click', function() {
+        refresh_device_event();
+    });
+    
+    function refresh_device_event() {
+        $('.actions-button').on('click', function(e) {
+            e.stopPropagation()  
             const user_id = $(this).attr('data-userId');
             $("#modal_btn").click();
-
-            let current_user = null;
             users.map((user, index) => {
                 if(user_id == user.id)
                     current_user = user;
             });
-
+            console.log(current_user);
+            
             let current_devices = [];
-            if(!current_user_devices.length)
+            // if(!current_user_devices.length)
                 current_devices = current_user.devices;
-            else
-                current_devices = current_user_devices;
+            // else
+            // current_devices = current_user_devices;
             current_devices = JSON.parse(current_devices);
             if(current_devices !== null)
                 current_devices = current_devices.map(current_device => parseInt(current_device));
@@ -210,6 +250,14 @@
 
             $('#save_btn').on('click', function() {
                 current_user_devices = current_devices;
+
+                users.map((user, index) => {
+                    if(current_user.id == user.id) {
+                        users[index].devices = JSON.stringify(current_devices);
+                        console.log(index, users[index]);
+                    }
+                });
+
                 $.ajax({
                     type: 'POST',
                     url: '/user_manage/add_device',
@@ -226,42 +274,76 @@
                 })
             });
         });
+    }
+    onUserClicked = function() {
+        $("#modal_btn_user").click();
+        const user_id = $(event.currentTarget).attr('trdata');
 
-        onUserClicked = function() {
-            $("#modal_btn_user").click();
-            const user_id = $(event.currentTarget).attr('trdata');
-            let current_user = null;
-            users.map((user, index) => {
-                if(user_id == user.id)
-                    current_user = user;
-            });
-            let current_username = current_user.name;
-            let current_useremail = current_user.email;
-            $("#cur_user").val(current_username);
-            $("#cur_email").val(current_useremail);
+        users.map((user, index) => {
+            if(user_id == user.id)
+                current_user = user;
+        });
+        let current_username = current_user.name;
+        let current_useremail = current_user.email;
+        let current_userrole = current_user.role;
 
-            $('#cur_btn').on('click', function(e) {
-                e.preventDefault();
-                $role = $("#cur_role").prop("checked") ? 5 : 1;
-                $.ajax({
-                    type: 'POST',
-                    url: '/user_manage/update_user',
-                    data: {
-                        '_token': $('input[name="_token"]').val(),
-                        'user_id': user_id,
-                        'user_name': $("#cur_user").val(),
-                        'user_email': $("#cur_email").val(),
-                        'user_pwd': $("#cur_pwd").val(),
-                        'user_role': $role
-                    },
-                    success: function(res) {
-                        $('#exampleModalScrollable_user').modal('hide');
-                    },
-                    error: function() {
-                    }
-                })
-            });
-        }
-    });
+        $("#cur_user").val(current_username);
+        $("#cur_email").val(current_useremail);
+
+        $("#cur_role").prop("checked", current_userrole == 5);
+
+
+        $('#cur_btn').on('click', function(e) {
+            e.preventDefault();
+            $role = $("#cur_role").prop("checked") ? 5 : 1;
+            $.ajax({
+                type: 'POST',
+                url: '/user_manage/update_user',
+                data: {
+                    '_token': $('input[name="_token"]').val(),
+                    'user_id': user_id,
+                    'user_name': $("#cur_user").val(),
+                    'user_email': $("#cur_email").val(),
+                    'user_pwd': $("#cur_pwd").val(),
+                    'user_role': $role
+                },
+                success: function(res) {
+
+                    //view
+                        //user_id
+                        let user_name = res['name'];
+                        let user_email = res['email'];
+                        let user_role = res['role']
+
+                        // control view
+                        var $user_tr = $("#user_container tr[trdata='"+user_id+"']");
+                        var html = [
+                                `<th width="10%">${user_id}</th>`,
+                                `<td>${user_name}</td>`,
+                                '<td width="20%" style="padding:0.5rem;">',
+                                    `<button data-userId="${user_id}" class="btn btn-primary actions-button">Assign to Device</button>`,
+                                '</td>'
+                        ].join('\n');
+                        $user_tr.html(html);
+                    //logic
+                    users.map((user, index) => {
+                        if(current_user.id == user.id) {
+                            console.log(index, users[index]);
+                            users[index] = {
+                                ...users[index],
+                                'name': user_name,
+                                'email': user_email,
+                                'role': user_role,
+                            }
+                        }
+                    });
+                
+                $('#exampleModalScrollable_user').modal('hide');
+                },
+                error: function() {
+                }
+            })
+        });
+    }
 </script>
 @endpush
