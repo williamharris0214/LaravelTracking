@@ -6,7 +6,7 @@
         <div class="tab-content mb-5">
             <div class="tab-pane show active" role="tabpanel" id="tableStripedDemo" aria-labelledby="tableStripedDemoTab">
                 <div class="p-3">
-                    <h2 style="margin-bottom: 1rem">Assgin Devices</h2>
+                    <h2 style="margin-bottom: 1rem">User Management</h2>
                     <table class="table table-bordered table-hover table-striped mb-0">
                         <thead>
                             <tr>
@@ -15,9 +15,9 @@
                                 <th style="background-color:lavender; padding:1rem;" scope="col">Devices</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="user_container">
                             @foreach($users as $user)
-                            <tr>
+                            <tr trdata="{{ $user->id }}" onclick="onUserClicked()">
                                 <th width="10%">{{ $user->id }}</th>
                                 <td>{{ $user->name }}</td>
                                 <td width="20%" style="padding:0.5rem;">
@@ -27,11 +27,14 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <button class="btn btn-primary add-button mt-3">Add a user</button>
                 </div>
             </div>
         </div>
 
         <button id="modal_btn" class="btn btn-primary d-none" type="button" data-bs-toggle="modal" data-bs-target="#exampleModalScrollable">Launch scrollable modal<i class="trailing-icon material-icons">launch</i></button>
+        <button id="modal_btn_new" class="btn btn-primary d-none" type="button" data-bs-toggle="modal" data-bs-target="#exampleModalScrollable_new">Launch scrollable modal<i class="trailing-icon material-icons">launch</i></button>
+        <button id="modal_btn_user" class="btn btn-primary d-none" type="button" data-bs-toggle="modal" data-bs-target="#exampleModalScrollable_user">Launch scrollable modal<i class="trailing-icon material-icons">launch</i></button>
 
         <div class="modal fade" id="exampleModalScrollable" tabindex="-1" aria-labelledby="exampleModalScrollableLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable">
@@ -69,6 +72,45 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="exampleModalScrollable_new" tabindex="-1" aria-labelledby="exampleModalScrollableLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalScrollableLabel">Add a user</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="padding:1rem;">
+                        <form>
+                            Name: <input type="text" required id="new_user" name="new_user" class="w-100">
+                            Email: <input type="email" required id="new_email" name="new_email" class="w-100">
+                            Password: <input type="password" required id="new_pwd" name="new_pwd" class="w-100">
+                            <button type="button" id="add_btn" class="mt-2 btn btn-primary">Add</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="exampleModalScrollable_user" tabindex="-1" aria-labelledby="exampleModalScrollableLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalScrollableLabel">User Detail</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="padding:1rem;">
+                        <form>
+                            Name: <input type="text" required id="cur_user" name="new_user" class="w-100">
+                            Email: <input type="email" required id="cur_email" name="new_email" class="w-100">
+                            Password: <input type="password" required id="cur_pwd" name="new_pwd" class="w-100">
+                            <div><input type="checkbox" id="cur_role" name="new_role" class="mt-2"> Administrator</div>
+                            <button id="cur_btn" class="mt-2 btn btn-primary">OK</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 @endsection
@@ -79,6 +121,37 @@
         const users = <?php echo json_encode($users); ?>;
         const devices = <?php echo json_encode($devices); ?>;
         let current_user_devices = [];
+
+        $('.add-button').on('click', function() {
+            $("#modal_btn_new").click();
+            $("#add_btn").on('click', function() {
+                let new_user_name = $("#new_user").val();
+                let new_user_email = $("#new_email").val();
+                let new_user_pwd = $("#new_pwd").val();
+                $.ajax({
+                    type: 'POST',
+                    url: '/user_manage/add_user',
+                    data: {
+                        '_token': $('input[name="_token"]').val(),
+                        'new_user': new_user_name,
+                        'new_email': new_user_email,
+                        'new_pwd': new_user_pwd
+                    },
+                    success: function(res) {
+                        console.log(res);
+                        // $('#user_container').append('<tr trdata="' + res.id +'" onclick="onUserClicked()">' + 
+                        // '<th width="10%">' + res.id + '</th>' + 
+                        // '<td>' + res.name + '</td>' +
+                        // '<td width="20%" style="padding:0.5rem;">' + '<button data-userId="' + res.id + '" class="btn btn-primary actions-button">Assign to Device</button></td>' +
+                        // '</tr>')
+                        //$('#exampleModalScrollable_new').modal('hide');
+                    },
+                    error: function(err) {
+                        alert("Failed to create a new user");
+                    }
+                })
+            });
+        });
 
         $('.actions-button').on('click', function() {
             const user_id = $(this).attr('data-userId');
@@ -153,6 +226,42 @@
                 })
             });
         });
+
+        onUserClicked = function() {
+            $("#modal_btn_user").click();
+            const user_id = $(event.currentTarget).attr('trdata');
+            let current_user = null;
+            users.map((user, index) => {
+                if(user_id == user.id)
+                    current_user = user;
+            });
+            let current_username = current_user.name;
+            let current_useremail = current_user.email;
+            $("#cur_user").val(current_username);
+            $("#cur_email").val(current_useremail);
+
+            $('#cur_btn').on('click', function(e) {
+                e.preventDefault();
+                $role = $("#cur_role").prop("checked") ? 5 : 1;
+                $.ajax({
+                    type: 'POST',
+                    url: '/user_manage/update_user',
+                    data: {
+                        '_token': $('input[name="_token"]').val(),
+                        'user_id': user_id,
+                        'user_name': $("#cur_user").val(),
+                        'user_email': $("#cur_email").val(),
+                        'user_pwd': $("#cur_pwd").val(),
+                        'user_role': $role
+                    },
+                    success: function(res) {
+                        $('#exampleModalScrollable_user').modal('hide');
+                    },
+                    error: function() {
+                    }
+                })
+            });
+        }
     });
 </script>
 @endpush

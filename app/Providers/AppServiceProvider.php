@@ -32,8 +32,8 @@ class AppServiceProvider extends ServiceProvider
 
         $background_colors = [
             '0' => 'bg-danger',
-            '1' => 'bg-secondary',
-            '2' => 'bg-warniing',
+            '1' => 'bg-warning',
+            '2' => 'bg-success',
             '3' => 'bg-info',
         ];
 

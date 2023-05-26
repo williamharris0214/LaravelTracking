@@ -33,17 +33,17 @@
                                                             $background_color = "bg-danger";
                                                             break;
                                                         case 1:
-                                                            $background_color = "bg-secondary";
+                                                            $background_color = "bg-warning";
                                                             break;
                                                         case 2:
-                                                            $background_color = "bg-warning";
+                                                            $background_color = "bg-success";
                                                             break;
                                                         case 3:
                                                             $background_color = "bg-info";
                                                             break;
                                                     }
                                                 ?>
-                                                <tr class="{{ $background_color }}">
+                                                <tr class="{{ $device_latest->getBackgroundColor() }}">
                                                     <td style="width:10%;"><mwc-checkbox class="devices_checker" data-deviceid="{{ $device->id }}"></mwc-checkbox></td>
                                                     <td>{{ $device->device_name }}</td>
                                                     <td>{{ $device_status[$device_latest->status] }}</td>
@@ -78,7 +78,7 @@
                     </div>
                 </div>
             </div>
-            <div id="trackingmap" class="col-xl-8 col-md-6 mb-5">
+            <div id="trackingmap" class="col-xl-8 col-md-6 mb-5" style="min-height:500px;">
             </div>
         </div>
         <div>
@@ -124,11 +124,6 @@
                                         </tr>
                                     </thead>
                                     <tbody id="first_device_history_table">
-                                        <tr>
-                                            <td style="padding:1rem;">05/10/2023</td>
-                                            <td style="padding:1rem;">10:30:21</td>
-                                            <td style="padding:1rem;">(10.342, 11.234)</td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -156,11 +151,6 @@
                                         </tr>
                                     </thead>
                                     <tbody id="second_device_history_table">
-                                        <tr>
-                                            <td style="padding:1rem;">05/10/2023</td>
-                                            <td style="padding:1rem;">10:30:21</td>
-                                            <td style="padding:1rem;">(10.342, 11.234)</td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -223,7 +213,7 @@
                     if(obj.timestamp >= latest_track.timestamp)
                         latest_track = obj;
                 })
-                device_temp += '<tr class=' + getBackgroundColor(latest_track.status) + '>' +
+                device_temp += '<tr class=' + getBackgroundColor(latest_track.status, latest_track.timestamp) + '>' +
                                     '<td><mwc-checkbox checked class="devices_checker" data-deviceid="' + latest_track.device_id + '"></mwc-checkbox></td>' + 
                                     '<td>' + latest_track.device_name + '</td>' + 
                                     '<td>' + getStatusName(latest_track.status) + '</td>' + 

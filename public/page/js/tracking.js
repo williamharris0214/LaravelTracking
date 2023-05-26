@@ -249,20 +249,24 @@ function getFilteredIndex(filteredArray, start, end) {
     return filteredIndexes;
 }
 
-getBackgroundColor = function(status) {
-    background_color = "bg-light";
+getBackgroundColor = function(status, timestamp) {
+    background_color = "bg-info";
+    const now = Math.floor(Date.now() / 1000);
+    let diffInMinutes = Math.floor((now - timestamp) / 60);
     switch(status) {
         case 0:
             background_color = "bg-danger";
             break;
         case 1:
-            background_color = "bg-secondary";
+            background_color = "bg-warning";
             break;
         case 2:
-            background_color = "bg-warning";
+            background_color = "bg-success";
             break;
         case 3:
             background_color = "bg-info";
+            if(diffInMinutes >= 12 * 24 * 60)
+                background_color = "bg-success";
             break;
     }
     return background_color;
@@ -290,16 +294,33 @@ getStatusName = function(status) {
 getDiffMins = function(timestamp) {
     const now = Math.floor(Date.now() / 1000);
     let diffInMinutes = Math.floor((now - timestamp) / 60);
-    let res = `${diffInMinutes} Minutes`;
+    let res = `${diffInMinutes} mins`;
     if(diffInMinutes >= 60) {
-        diffInMinutes = Math.round(diffInMinutes / 60);
-        if(diffInMinutes >= 24)
+        let mins = diffInMinutes % 60;
+        let hours = parseInt(diffInMinutes / 60);
+        if(hours >= 24)
         {
-            diffInMinutes = Math.round(diffInMinutes / 24);
-            res = `${diffInMinutes} Days`;
+            days = parseInt(hours / 24);
+            hours = hours % 24;
+            if(hours == 0) {
+                if(mins == 0)
+                    res = `${days} days`;
+                else
+                    res = `${days} days ${mins} mins`;
+            }
+            else {
+                if(mins == 0)
+                    res = `${days} days ${hours} hours`;
+                else
+                    res = `${days} days ${hours} hours ${mins} mins`;
+            }
         }
-        else
-            res = `${diffInMinutes} Hours`; 
+        else{
+            if(mins == 0)
+                res = `${hours} hours`;
+            else
+                res = `${hours} hours ${mins} mins`;
+        }
     }
     return res;
 }

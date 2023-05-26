@@ -23,6 +23,8 @@ Auth::routes();
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/user_manage', [UserController::class, 'user_manage'])->name('manage');
     Route::post('/user_manage/add_device', [UserController::class, 'add_device']);
+    Route::post('/user_manage/add_user', [UserController::class, 'add_user']);
+    Route::post('/user_manage/update_user', [UserController::class, 'update_user']);
     
     Route::get('/', [TrackingController::class, 'index'])->name('tracking');
     Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking');
